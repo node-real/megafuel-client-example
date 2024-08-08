@@ -11,6 +11,10 @@ for potential gas sponsorship.
 - Check if a transaction is sponsorable
 - Send transactions through a paymaster client to paymaster endpoint
 
+## Network Endpoint
+
+BSC testnet: https://bsc-paymaster-testnet.nodereal.io
+
 ## Example
 
 - [Js Example](./js-example/readme.md)
