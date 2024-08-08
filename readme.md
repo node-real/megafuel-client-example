@@ -17,6 +17,11 @@ BSC testnet: https://bsc-paymaster-testnet.nodereal.io
 
 ## Example
 
+Please get ERC20 token for test before you start:
+1. Visit Faucet: https://www.bnbchain.org/en/testnet-faucet
+2. Claim any kind of ERC20 token except BNB.
+![image](./assets/img.png)
+
 - [Js Example](./js-example/readme.md)
 - [Go Example](./go-example)
 
