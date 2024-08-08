@@ -8,7 +8,7 @@ leveraging a paymaster for potential gas sponsorship.
 
 1. Install dependencies
     ```shell
-    $go mod tidy
+    $ go mod tidy
     ```
 2. Configure the file
    Before running the application, you need to set up the following:
@@ -19,7 +19,7 @@ leveraging a paymaster for potential gas sponsorship.
 
 3. Run the example
    ```
-   $go run main.go
+   $ go run main.go
    ```
 
 

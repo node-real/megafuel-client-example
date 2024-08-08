@@ -5,7 +5,7 @@ This is a Js script to send Ethereum transactions with 0 gas price through Megan
 
 1. Install the dependency.
     ```shell
-    $npm install
+    $ npm install
     ```
 
 2. Edit the script.
@@ -19,5 +19,5 @@ This is a Js script to send Ethereum transactions with 0 gas price through Megan
 
 3. Run script
     ```shell
-    $npm start
+    $ npm start
     ```
