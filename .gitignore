@@ -1,0 +1,6 @@
+./js-example/node_modules/
+./js-example/npm-debug.log
+./js-example/yarn-error.log
+./js-example/yarn-debug.log
+./js-example/.pnpm-debug.log
+.idea/
