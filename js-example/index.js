@@ -9,7 +9,7 @@ class PaymasterProvider extends ethers.providers.JsonRpcProvider {
     const params = [{
       to: transaction.to,
       from: transaction.from,
-      value: ethers.utils.hexlify(transaction.value),
+      value: transaction.value != null ? ethers.utils.hexlify(transaction.value) : '0x0',
       gas: ethers.utils.hexlify(transaction.gasLimit || 0),
       data: transaction.data || '0x'
     }];
@@ -21,11 +21,11 @@ class PaymasterProvider extends ethers.providers.JsonRpcProvider {
 
 async function sendERC20Transaction() {
   // Replace with your private key (be cautious with private keys!)
-  const privateKey = 'YOUR_PRIVATE_KEY';
+  const privateKey = '';
   // replace with your ERC20 receiver
-  const toAddress = 'RECIPIENT_ADDRESS';
+  const toAddress = '0x..';
   // ERC20 token contract address (replace with the address of the token you want to send)
-  const tokenAddress = 'TOKEN_CONTRACT_ADDRESS';
+  const tokenAddress = '0x..';
 
 
   // Provider for assembling the transaction (e.g., mainnet)
@@ -59,7 +59,7 @@ async function sendERC20Transaction() {
     transaction.gasLimit = 100000; // Adjust gas limit as needed for token transfers
 
     try {
-      const sponsorableInfo = await provider.isSponsorable(transaction);
+      const sponsorableInfo = await paymasterProvider.isSponsorable(transaction);
       console.log('Sponsorable Information:', sponsorableInfo);
     } catch (error) {
       console.error('Error checking sponsorable status:', error);
@@ -69,8 +69,8 @@ async function sendERC20Transaction() {
     const signedTx = await wallet.signTransaction(transaction);
 
     // Send the raw transaction using the sending provider
-    const tx = await paymasterProvider.sendTransaction(signedTx);
-    console.log('Transaction sent:', tx.hash);
+    const tx = await paymasterProvider.send('eth_sendRawTransaction', [signedTx]);
+    console.log('Transaction sent:', tx);
 
   } catch (error) {
     console.error('Error sending transaction:', error);
