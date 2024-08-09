@@ -16,9 +16,9 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-const YOUR_PRIVATE_KEY = ""
-const TOKEN_CONTRACT_ADDRESS = "0x.."
-const RECIPIENT_ADDRESS = "0x.."
+const YourPrivateKey = ""
+const TokenContractAddress = "0x.."
+const RecipientAddress = "0x.."
 
 type PaymasterClient struct {
 	*ethclient.Client
@@ -91,7 +91,7 @@ func main() {
 	}
 
 	// Load your private key
-	privateKey, err := crypto.HexToECDSA(YOUR_PRIVATE_KEY)
+	privateKey, err := crypto.HexToECDSA(YourPrivateKey)
 	if err != nil {
 		log.Fatalf("Failed to load private key: %v", err)
 	}
@@ -104,10 +104,10 @@ func main() {
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
 
 	// Token contract address
-	tokenAddress := common.HexToAddress(TOKEN_CONTRACT_ADDRESS)
+	tokenAddress := common.HexToAddress(TokenContractAddress)
 
 	// Recipient address
-	toAddress := common.HexToAddress(RECIPIENT_ADDRESS)
+	toAddress := common.HexToAddress(RecipientAddress)
 
 	// Amount of tokens to transfer (adjust based on token decimals)
 	amount := big.NewInt(1000000000000000000) // 1 token for a token with 18 decimals

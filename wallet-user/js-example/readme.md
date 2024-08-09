@@ -3,6 +3,9 @@ This is a Js script to send Ethereum transactions with 0 gas price through Megan
 
 ## Quick Start
 
+The example is performed on BSC testnet, please ensure you have some test ERC20 on BSC testnet. (You can get some 
+from the official faucet)
+
 1. Install the dependency.
     ```shell
     $ npm install

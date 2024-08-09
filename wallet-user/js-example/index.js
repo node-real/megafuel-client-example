@@ -1,5 +1,13 @@
 const ethers = require('ethers');
 
+// Replace with your private key (be cautious with private keys!)
+const privateKey = 'YOUR_PRIVATE_KEY';
+// replace with your ERC20 receiver
+const toAddress = 'RECIPIENT_ADDRESS';
+// ERC20 token contract address (replace with the address of the token you want to send)
+const tokenAddress = 'TOKEN_CONTRACT_ADDRESS';
+
+
 class PaymasterProvider extends ethers.providers.JsonRpcProvider {
   constructor(url) {
     super(url);
@@ -20,13 +28,6 @@ class PaymasterProvider extends ethers.providers.JsonRpcProvider {
 }
 
 async function sendERC20Transaction() {
-  // Replace with your private key (be cautious with private keys!)
-  const privateKey = '';
-  // replace with your ERC20 receiver
-  const toAddress = '0x..';
-  // ERC20 token contract address (replace with the address of the token you want to send)
-  const tokenAddress = '0x..';
-
 
   // Provider for assembling the transaction (e.g., mainnet)
   const assemblyProvider = new ethers.providers.JsonRpcProvider('https://bsc-testnet-dataseed.bnbchain.org');

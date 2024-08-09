@@ -1,18 +1,10 @@
-# Paymaster Client Example
+# Paymaster Example
 
-This repository contains a Go and Js application demonstrating how to interact with an BSC testnet using a paymaster 
-service. The application showcases how to create, sign, and send ERC20 token transfers while leveraging a paymaster 
-for potential gas sponsorship.
-
-## Workflow
-
-- Connect to an Ethereum network using a paymaster client
-- Create and sign ERC20 token transfer transactions
-- Check if a transaction is sponsorable
-- Send transactions through a paymaster client to paymaster endpoint
+This repository contains several examples implemented in both Golang and JavaScript, 
+including those for wallet integration, CEX (Centralized Exchange) integration, 
+payment gateway integration, and more.
 
 ## Network Endpoint
-
 BSC testnet: https://bsc-paymaster-testnet.nodereal.io
 
 ## Example
@@ -22,8 +14,8 @@ Please get ERC20 token for test before you start:
 2. Claim any kind of ERC20 token except BNB.
 ![image](./assets/img.png)
 
-- [Js Example](./js-example/readme.md)
-- [Go Example](./go-example)
+- [For wallet integration](./wallet-user/readme.md)
+- [For payment gateway integration](./sponsor/payment-gateway/readme.md)
 
 ## More docs
 - [Paymaster Overview](https://docs.nodereal.io/docs/maganode-paymaster-overview)
