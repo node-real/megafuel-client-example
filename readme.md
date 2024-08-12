@@ -24,7 +24,7 @@ Please get ERC20 token for test before you start:
 - [For payment gateway integration](./payment-gateway/readme.md)
 - [For Cex integration](./cex/readme.md)
 
-## More docs
+## More Docs about the Meganode Paymaster
 - [Paymaster Overview](https://docs.nodereal.io/docs/maganode-paymaster-overview)
 - [Sponsor Policy Management](https://docs.nodereal.io/docs/meganode-paymaster-policy-management)
 - [Wallet Integration Guide](https://docs.nodereal.io/docs/wallet-integration)
