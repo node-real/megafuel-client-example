@@ -1,0 +1,12 @@
+{
+  "name": "meganode-paymaster-example",
+  "version": "1.0.0",
+  "description": "A script to send Ethereum transactions with 0 gas price through Meganode Paymaster",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ethers": "^5.7.2"
+  }
+}

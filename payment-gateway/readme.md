@@ -9,7 +9,7 @@ to pay the gas fee on behalf of the users.
 Before getting started, the payment gateway, acting as a gas fee sponsor, needs to first register as a user on 
 Nodereal and then apply to create a policy. The specific process can be referred to in [this document](https://docs.nodereal.io/docs/meganode-paymaster-sponsor-guidelines).
 
-After the application is approved, Nodereal will send an email to the Payment Gateway with the ID of 
+After the application is approved, Nodereal will email the Payment Gateway with the ID of 
 the policy created for them.
 
 ## Configure the Policy
