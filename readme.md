@@ -1,18 +1,18 @@
 # Paymaster Example
 
-This repository hosts a collection of comprehensive examples implemented in both Golang and JavaScript. 
-The examples cover a range of blockchain-related integrations, including:
+This repository hosts a collection of examples implemented in both Golang and JavaScript for the [Meganode Paymaster](https://docs.nodereal.io/docs/meganode-paymaster-overview).
+The client implementation follows the API standards of [BEP-414](https://github.com/bnb-chain/BEPs/blob/master/BEPs/BEP-414.md).
+The examples include:
 
 - Wallet integration
 - Centralized Exchange (CEX) integration
 - Payment gateway integration
 
-The client implementation follows the API standards of [BEP-414](https://github.com/bnb-chain/BEPs/blob/master/BEPs/BEP-414.md).
 
 ## Network Endpoint
 BSC testnet: https://bsc-paymaster-testnet.nodereal.io
 
-## Example
+## Quick Start
 
 Please get ERC20 token for test before you start:
 1. Visit Faucet: https://www.bnbchain.org/en/testnet-faucet
