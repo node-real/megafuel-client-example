@@ -15,11 +15,9 @@ Nodereal and then apply to create a policy. The specific process can be referred
 After the application is approved, Nodereal will email the Sponsor with the ID of 
 the policy created for them.
 
-And the sponsor will add the hot-wallets of Cex into the whitelist of the sponsor policy.
-
 ## Configure the Policy
 
-The scripts in the example demonstrate how the sponsor should configure the policy, as well as how users can 
+The scripts in the example demonstrate how the sponsor should configure the policy, as well as how Cex can 
 send transactions with 0 gas price:
 
 - The sponsor sets the policy rule through API: sponsor any transaction that sends a specific ERC20 token from a list of
