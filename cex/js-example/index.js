@@ -107,14 +107,15 @@ async function sponsorSetUpPolicyRules() {
   const wallet = new ethers.Wallet(hotwalletPrivateKey)
   // sponsor the tx that interact with the stable coin ERC20 contract
   try {
-    await client.emptyWhitelist({
-      policyUuid: policyID,
-      whitelistType: "FromAccountWhitelist",
-    });
-    await client.emptyWhitelist({
-      policyUuid: policyID,
-      whitelistType: "ToAccountWhitelist",
-    });
+    // You can empty the policy rules before re-try.
+    // await client.emptyWhitelist({
+    // policyUuid: policyID,
+    //  whitelistType: "FromAccountWhitelist",
+    // });
+    //await client.emptyWhitelist({
+    //  policyUuid: policyID,
+    //  whitelistType: "ToAccountWhitelist",
+    // });
     // sponsor the tx that interact with the stable coin ERC20 contract
     const res1 = await client.addToWhitelist({
       policyUuid: policyID,
