@@ -17,10 +17,10 @@ from the official faucet)
 
    - Set "TokenContractAddress" to the ERC20 token contract address that users want to withdraw.
    - Set "WithdrawRecipientAddress" to the receiver address of user's withdrawal request.
-   - Set "SponsorPolicyId" to the policy ID created by the sponsor on Meganode Paymaster, create one 
-   from [here](https://docs.nodereal.io/docs/meganode-paymaster-sponsor-guidelines) if you don't have it.
-   - Set "SponsorAPIEndpoint" to the API key created by the sponsor in the Nodereal MegaNode Console.
-     create one from [here](https://docs.nodereal.io/docs/meganode-paymaster-sponsor-guidelines) if you don't have it.
+   - Set "SponsorPolicyId" to the policy ID created by the sponsor on Megafuel Paymaster, create one 
+   from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
+   - Set "SponsorAPIEndpoint" to the API key created by the sponsor in the Nodereal dashboard.
+     create one from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
    - Set "HotwalletPrivateKey" to the Cex's hotwallet private key, ensuring this wallet contains the required ERC20 tokens.
 
 3. Run the example

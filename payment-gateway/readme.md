@@ -1,13 +1,13 @@
 # Payment Gateway Example
 
 In payment scenarios, it's most common for users to pay with stablecoins. However, users might not possess the 
-gas token of the specific blockchain network. Therefore, Meganode allows payment gateways or other third parties 
+gas token of the specific blockchain network. Therefore, Megafuel allows payment gateways or other third parties 
 to pay the gas fee on behalf of the users.
 
 ## Prepare Work
 
 Before getting started, the payment gateway, acting as a gas fee sponsor, needs to first register as a user on 
-Nodereal and then apply to create a policy. The specific process can be referred to in [this document](https://docs.nodereal.io/docs/meganode-paymaster-sponsor-guidelines).
+Nodereal and then apply to create a policy. The specific process can be referred to in [this document](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines).
 
 After the application is approved, Nodereal will email the Payment Gateway with the ID of 
 the policy created for them.

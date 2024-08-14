@@ -1,7 +1,7 @@
 {
-  "name": "meganode-paymaster-example",
+  "name": "megafuel-paymaster-example",
   "version": "1.0.0",
-  "description": "A script to send Ethereum transactions with 0 gas price through Meganode Paymaster",
+  "description": "A script to send Ethereum transactions with 0 gas price through Megafuel Paymaster",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"

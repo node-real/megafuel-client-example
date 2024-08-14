@@ -1,8 +1,6 @@
 # GO Example
-This repository contains a Go application demonstrating how to interact with an BSC network through Mega 
-Paymaster. The application showcases how to create, sign, and send ERC20 token transfers while 
-leveraging a paymaster for potential gas sponsorship.
-
+This repository contains a Go application demonstrating how to send gasless tx on BSC through Megafuel 
+paymaster.
 
 ## Quick Start
 The example is performed on BSC testnet, please ensure you have some test ERC20 on BSC testnet. (You can get some

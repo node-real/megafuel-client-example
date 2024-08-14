@@ -1,8 +1,6 @@
 # Wallet Client Example
 
-This repository contains a Go and Js application demonstrating how to interact with an BSC testnet using a paymaster
-service. The application showcases how to create, sign, and send ERC20 token transfers while leveraging a paymaster
-for potential gas sponsorship.
+This package contains a Go and Js application demonstrating how to send gasless tx on BSC through Megafuel.
 
 ## Workflow
 

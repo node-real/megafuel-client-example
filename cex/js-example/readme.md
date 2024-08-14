@@ -20,10 +20,10 @@ from the official faucet)
    - 'TOKEN_CONTRACT_ADDRESS' with the address of the ERC20 token user want to withdraw.
    - 'USER_WITHDRAW_ADDRESS' with the receiver account of the withdrawal request.
    - 'TOKEN_CONTRACT_ADDRESS' with the ERC20 token that the Payment Gateway support.
-   - 'SPONSOR_API_KEY' to the API key created by the Sponsor in the Nodereal MegaNode Console. create one 
-     from [here](https://docs.nodereal.io/docs/meganode-paymaster-sponsor-guidelines) if you don't have it.
-   - 'SPONSOR_POLICY_ID' to the policy ID created by the sponsor on Meganode Paymaster, create one
-     from [here](https://docs.nodereal.io/docs/meganode-paymaster-sponsor-guidelines) if you don't have it.
+   - 'SPONSOR_API_KEY' to the API key created by the Sponsor in the Nodereal dashboard. create one 
+     from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
+   - 'SPONSOR_POLICY_ID' to the policy ID created by the sponsor on Megafuel Paymaster, create one
+     from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
 
 3. Run script
     ```shell

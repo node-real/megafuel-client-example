@@ -10,7 +10,7 @@ This example demonstrates how a CEX should manage the sponsor policy in such a s
 ## Prepare Work
 
 Before getting started, the gas fee sponsor, needs to first register as a user on 
-Nodereal and then apply to create a policy. The specific process can be referred to in [this document](https://docs.nodereal.io/docs/meganode-paymaster-sponsor-guidelines).
+Nodereal and then apply to create a policy. The specific process can be referred to in [this document](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines).
 
 After the application is approved, Nodereal will email the Sponsor with the ID of 
 the policy created for them.
