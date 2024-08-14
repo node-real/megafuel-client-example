@@ -6,7 +6,8 @@ for potential gas sponsorship.
 
 ## Workflow
 
-- Connect to an Ethereum network using a paymaster client
-- Create and sign ERC20 token transfer transactions
+- Connect to an BSC/opBNB network using a paymaster client
+- Create an ERC20 token transfer transactions
 - Check if a transaction is sponsorable
-- Send transactions through a paymaster client to paymaster endpoint
+- Set the gas price to 0 and sign transaction
+- Send transactions through a paymaster client
