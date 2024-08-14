@@ -1,6 +1,6 @@
-# Paymaster Example
+# Megafuel client Example
 
-This repository hosts a collection of examples implemented in both Golang and JavaScript for the [Meganode Paymaster](https://docs.nodereal.io/docs/meganode-paymaster-overview).
+This repository hosts a collection of examples implemented in both Golang and JavaScript for the [Megafuel Paymaster](https://docs.nodereal.io/docs/megafuel-overview).
 The client implementation follows the API standards of [BEP-414](https://github.com/bnb-chain/BEPs/blob/master/BEPs/BEP-414.md).
 The examples include:
 
@@ -10,7 +10,7 @@ The examples include:
 
 
 ## Network Endpoint
-BSC testnet: https://bsc-paymaster-testnet.nodereal.io
+BSC testnet: https://bsc-megafuel-testnet.nodereal.io
 
 ## Quick Start
 
@@ -24,8 +24,9 @@ Please get ERC20 token for test before you start:
 - [For payment gateway integration](./payment-gateway/readme.md)
 - [For Cex integration](./cex/readme.md)
 
-## More Docs about the Meganode Paymaster
-- [Paymaster Overview](https://docs.nodereal.io/docs/maganode-paymaster-overview)
-- [Sponsor Policy Management](https://docs.nodereal.io/docs/meganode-paymaster-policy-management)
+## More Docs about the Megafuel Paymaster
+- [Paymaster Overview](https://docs.nodereal.io/docs/megafuel-overview)
+- [Sponsor Policy Management](https://docs.nodereal.io/docs/megafuel-policy-management)
+- [Sponsor Guidelines](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines)
 - [Wallet Integration Guide](https://docs.nodereal.io/docs/wallet-integration)
-- [Paymaster API Spec](https://docs.nodereal.io/docs/meganode-paymaster-api)
+- [Paymaster API Spec](https://docs.nodereal.io/docs/megafuel-api)

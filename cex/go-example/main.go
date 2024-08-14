@@ -18,7 +18,7 @@ import (
 const TokenContractAddress = "0x.."
 const WithdrawRecipientAddress = "0x.."
 const SponsorPolicyId = ".."
-const SponsorAPIEndpoint = "https://open-platform.nodereal.io/{YOUR_API_KEY}/eoa-paymaster-testnet"
+const SponsorAPIEndpoint = "https://open-platform.nodereal.io/{YOUR_API_KEY}/megafuel-testnet"
 const HotwalletPrivateKey = ".."
 
 func main() {
@@ -62,7 +62,7 @@ func cexDoGaslessWithdrawl() {
 		log.Fatalf("Failed to connect to the Ethereum network: %v", err)
 	}
 	// Create a PaymasterClient (for transaction sending)
-	paymasterClient, err := NewPaymasterClient("https://bsc-paymaster-testnet.nodereal.io")
+	paymasterClient, err := NewPaymasterClient("https://bsc-megafuel-testnet.nodereal.io")
 	if err != nil {
 		log.Fatalf("Failed to create PaymasterClient: %v", err)
 	}

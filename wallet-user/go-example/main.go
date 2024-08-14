@@ -85,7 +85,7 @@ func main() {
 		log.Fatalf("Failed to connect to the Ethereum network: %v", err)
 	}
 	// Create a PaymasterClient (for transaction sending)
-	paymasterClient, err := NewPaymasterClient("https://bsc-paymaster-testnet.nodereal.io")
+	paymasterClient, err := NewPaymasterClient("https://bsc-megafuel-testnet.nodereal.io")
 	if err != nil {
 		log.Fatalf("Failed to create PaymasterClient: %v", err)
 	}

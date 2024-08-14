@@ -33,7 +33,7 @@ async function sendERC20Transaction() {
   const assemblyProvider = new ethers.providers.JsonRpcProvider('https://bsc-testnet-dataseed.bnbchain.org');
 
   // Provider for sending the transaction (e.g., could be a different network or provider)
-  const paymasterProvider = new PaymasterProvider('https://bsc-paymaster-testnet.nodereal.io');
+  const paymasterProvider = new PaymasterProvider('https://bsc-megafuel-testnet.nodereal.io');
 
   const wallet = new ethers.Wallet(privateKey, assemblyProvider);
   // ERC20 token ABI (only including the transfer function)
