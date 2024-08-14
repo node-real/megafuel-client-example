@@ -25,7 +25,7 @@ from the official faucet)
 
 3. Run the example
    ```
-   $ go run main.go
+   $ go run ./
    ```
 
 
