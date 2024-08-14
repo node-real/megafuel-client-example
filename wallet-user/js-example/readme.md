@@ -1,5 +1,5 @@
 # Js Example 
-This is a Js script to send Ethereum transactions with 0 gas price through Meganode Paymaster.
+This is a Js script to send BSC transactions with 0 gas price through Meganode Paymaster.
 
 ## Quick Start
 
@@ -14,9 +14,9 @@ from the official faucet)
 2. Edit the script.
    
     Open index.js and replace the following placeholders:
-   - 'YOUR_PRIVATE_KEY' with your Ethereum private key
+   - 'YOUR_PRIVATE_KEY' with your BSC private key
    - 'TOKEN_CONTRACT_ADDRESS' with the address of the ERC20 token you want to send
-   - 'RECIPIENT_ADDRESS' with the Ethereum address you want to send tokens to
+   - 'RECIPIENT_ADDRESS' with the BSC address you want to send tokens to
 
     Please ensure that the unlocked account is allowed to send gasless tx.
 
