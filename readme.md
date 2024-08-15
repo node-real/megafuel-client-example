@@ -5,7 +5,8 @@ The client implementation follows the API standards of [BEP-414](https://github.
 The examples include:
 
 - Wallet integration: The wallet can detect transactions eligible for sponsorship through MegaFuel's API, 
-and send these sponsorship-eligible transactions via the paymaster.
+and send these sponsorship-eligible transactions via the paymaster. As the solution is permissionless, any wallets are welcome
+to integrate.
 - Centralized Exchange (CEX) integration: Token issuers promote the adoption of their tokens by sponsoring CEX users 
 to withdraw funds with zero gas fees. The CEX then manages this sponsorship policy through MegaFuel's interface.
 - Payment gateway integration: The payment gateway sponsors consumers to pay with ERC20 tokens without incurring gas 
