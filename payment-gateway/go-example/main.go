@@ -3,58 +3,83 @@ package main
 import (
 	"context"
 	"crypto/ecdsa"
-	"encoding/json"
 	"fmt"
 	"log"
 	"math/big"
+	"os"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/gofrs/uuid"
+	"github.com/joho/godotenv"
+	"github.com/node-real/megafuel-go-sdk/pkg/paymasterclient"
+	"github.com/node-real/megafuel-go-sdk/pkg/sponsorclient"
 )
 
-const PaymentTokenContractAddress = "0x.."
-const PaymentRecipientAddress = "0x.."
-const PaymentSponsorPolicyId = ".."
-const UserPrivateKey = "..."
+var (
+	PaymasterURL string
+	ChainURL     string
+	SponsorURL   string
 
-const sponsorAPIEndpoint = "https://open-platform.nodereal.io/{Your_API_key}/megafuel"
-const paymasterEndpoint = "https://bsc-megafuel.nodereal.io"
+	PolicyUUID uuid.UUID
 
-// testnet endpoint
-// const sponsorAPIEndpoint = "https://open-platform.nodereal.io/{Your_API_key}/megafuel-testnet"
-// const paymasterEndpoint = "https://bsc-megafuel-testnet.nodereal.io'"
+	TokenContractAddress common.Address
+	RecipientAddress     common.Address
+	UserPrivateKey       string
+)
+
+func init() {
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
+	PaymasterURL = os.Getenv("PAYMASTER_URL")
+	ChainURL = os.Getenv("CHAIN_URL")
+	SponsorURL = os.Getenv("SPONSOR_URL")
+
+	PolicyUUID, err = uuid.FromString(os.Getenv("POLICY_UUID"))
+	if err != nil {
+		log.Fatalf("Error parsing POLICY_UUID")
+	}
+
+	TokenContractAddress = common.HexToAddress(os.Getenv("TOKEN_CONTRACT_ADDRESS"))
+	RecipientAddress = common.HexToAddress(os.Getenv("RECIPIENT_ADDRESS"))
+	UserPrivateKey = os.Getenv("USER_PRIVATE_KEY")
+}
 
 func main() {
-	receiver := common.HexToAddress(PaymentRecipientAddress)
 	payAmount := big.NewInt(1e17)
 
-	paymentGatewaySetUpPolicyRules(receiver)
+	paymentGatewaySetUpPolicyRules(RecipientAddress)
 
-	userDoGaslessPayment(receiver, payAmount)
+	userDoGaslessPayment(RecipientAddress, payAmount)
 }
 
 func paymentGatewaySetUpPolicyRules(receiver common.Address) {
-	sponsorClient, err := NewSponsorClient(sponsorAPIEndpoint)
+	sponsorClient, err := sponsorclient.New(context.Background(), SponsorURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// sponsor the tx that interact with the stable coin ERC20 contract
-	success, err := sponsorClient.AddToWhitelist(context.Background(), WhitelistParams{
-		PolicyUUID:    PaymentSponsorPolicyId,
-		WhitelistType: ToAccountWhitelist,
-		Values:        []string{PaymentTokenContractAddress},
+	success, err := sponsorClient.AddToWhitelist(context.Background(), sponsorclient.WhiteListArgs{
+		PolicyUUID:    PolicyUUID,
+		WhitelistType: sponsorclient.ToAccountWhitelist,
+		Values:        []string{TokenContractAddress.String()},
 	})
 	if err != nil || !success {
 		log.Fatal("failed to add token contract whitelist")
 	}
 
 	// sponsor the tx that call the "transfer" interface of ERC20 contract
-	success, err = sponsorClient.AddToWhitelist(context.Background(), WhitelistParams{
-		PolicyUUID:    PaymentSponsorPolicyId,
-		WhitelistType: ContractMethodSigWhitelist,
+	success, err = sponsorClient.AddToWhitelist(context.Background(), sponsorclient.WhiteListArgs{
+		PolicyUUID:    PolicyUUID,
+		WhitelistType: sponsorclient.ContractMethodSigWhitelist,
 		Values:        []string{"0xa9059cbb"},
 	})
 	if err != nil || !success {
@@ -62,19 +87,18 @@ func paymentGatewaySetUpPolicyRules(receiver common.Address) {
 	}
 
 	// sponsor the tx that "transfer" stable coin to particular receiver account
-	success, err = sponsorClient.AddToWhitelist(context.Background(), WhitelistParams{
-		PolicyUUID:    PaymentSponsorPolicyId,
-		WhitelistType: BEP20ReceiverWhiteList,
+	success, err = sponsorClient.AddToWhitelist(context.Background(), sponsorclient.WhiteListArgs{
+		PolicyUUID:    PolicyUUID,
+		WhitelistType: sponsorclient.BEP20ReceiverWhiteList,
 		Values:        []string{receiver.String()},
 	})
-
 	if err != nil || !success {
 		log.Fatal("failed to add payment receiver whitelist")
 	}
 
-	receiverWhitelist := GetWhitelistParams{
-		PolicyUUID:    PaymentSponsorPolicyId,
-		WhitelistType: BEP20ReceiverWhiteList,
+	receiverWhitelist := sponsorclient.GetWhitelistArgs{
+		PolicyUUID:    PolicyUUID,
+		WhitelistType: sponsorclient.BEP20ReceiverWhiteList,
 		Offset:        0,
 		Limit:         1000,
 	}
@@ -85,15 +109,25 @@ func paymentGatewaySetUpPolicyRules(receiver common.Address) {
 		log.Fatal(err)
 	}
 
+	addresses, ok := result.([]interface{})
+	if !ok {
+		log.Fatal("failed to get whitelist addresses")
+	}
+
 	fmt.Println("Whitelist addresses:")
-	for _, address := range result {
+	for _, address := range addresses {
 		fmt.Println(address)
 	}
 }
 
 func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
-	// Create a PaymasterClient (for transaction sending)
-	paymasterClient, err := NewPaymasterClient(paymasterEndpoint)
+	// Connect to an Ethereum node (for transaction assembly)
+	client, err := ethclient.Dial(ChainURL)
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum network: %v", err)
+	}
+
+	paymasterClient, err := paymasterclient.New(context.Background(), PaymasterURL)
 	if err != nil {
 		log.Fatalf("Failed to create PaymasterClient: %v", err)
 	}
@@ -111,9 +145,6 @@ func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
 	}
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
 
-	// Token contract address
-	tokenAddress := common.HexToAddress(PaymentTokenContractAddress)
-
 	// Create ERC20 transfer data
 	data, err := createERC20TransferData(receiver, amount)
 	if err != nil {
@@ -121,17 +152,17 @@ func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
 	}
 
 	// Get the latest nonce for the from address
-	nonce, err := paymasterClient.PendingNonceAt(context.Background(), fromAddress)
+	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
 		log.Fatalf("Failed to get nonce: %v", err)
 	}
 
 	// Create the transaction
 	gasPrice := big.NewInt(0)
-	tx := types.NewTransaction(nonce, tokenAddress, big.NewInt(0), 300000, gasPrice, data)
+	tx := types.NewTransaction(nonce, TokenContractAddress, big.NewInt(0), 300000, gasPrice, data)
 
 	// Get the chain ID
-	chainID, err := paymasterClient.ChainID(context.Background())
+	chainID, err := client.ChainID(context.Background())
 	if err != nil {
 		log.Fatalf("Failed to get chain ID: %v", err)
 	}
@@ -142,10 +173,15 @@ func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
 		log.Fatalf("Failed to sign transaction: %v", err)
 	}
 
+	txInput, err := signedTx.MarshalBinary()
+	if err != nil {
+		log.Fatalf("Failed to marshal transaction: %v", err)
+	}
+
 	// Convert to Transaction struct for IsSponsorable check
 	gasLimit := tx.Gas()
-	sponsorableTx := Transaction{
-		To:    &tokenAddress,
+	sponsorableTx := paymasterclient.TransactionArgs{
+		To:    &TokenContractAddress,
 		From:  fromAddress,
 		Value: (*hexutil.Big)(big.NewInt(0)),
 		Gas:   (*hexutil.Uint64)(&gasLimit),
@@ -157,13 +193,11 @@ func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
 	if err != nil {
 		log.Fatalf("Error checking sponsorable status: %v", err)
 	}
-
-	jsonInfo, _ := json.MarshalIndent(sponsorableInfo, "", "  ")
-	fmt.Printf("Sponsorable Information:\n%s\n", string(jsonInfo))
+	fmt.Printf("Sponsorable Information:\n%+v\n", sponsorableInfo)
 
 	if sponsorableInfo.Sponsorable {
 		// Send the transaction using PaymasterClient
-		err := paymasterClient.SendTransaction(context.Background(), signedTx)
+		_, err := paymasterClient.SendRawTransaction(context.Background(), txInput)
 		if err != nil {
 			log.Fatalf("Failed to send sponsorable transaction: %v", err)
 		}
@@ -171,4 +205,17 @@ func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
 	} else {
 		fmt.Println("Transaction is not sponsorable. You may need to send it as a regular transaction.")
 	}
+}
+
+func createERC20TransferData(to common.Address, amount *big.Int) ([]byte, error) {
+	transferFnSignature := []byte("transfer(address,uint256)")
+	methodID := crypto.Keccak256(transferFnSignature)[:4]
+	paddedAddress := common.LeftPadBytes(to.Bytes(), 32)
+	paddedAmount := common.LeftPadBytes(amount.Bytes(), 32)
+
+	var data []byte
+	data = append(data, methodID...)
+	data = append(data, paddedAddress...)
+	data = append(data, paddedAmount...)
+	return data, nil
 }

@@ -1,12 +1,16 @@
 {
   "name": "megafuel-paymaster-example",
   "version": "1.0.0",
-  "description": "A script to send BSC transactions with 0 gas price through MegaFuel paymaster",
-  "main": "index.js",
+  "description": "A script to send BSC transactions with 0 gas price through Megafuel paymaster",
+  "main": "./dist/tsc/main.js",
+  "types": "./dist/tsc/main.d.ts",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "ethers": "^5.7.2"
-  }
+    "dotenv": "^16.4.5",
+    "ethers": "^6.3.0",
+    "megafuel-js-sdk": "^1.0.5"
+  },
+  "type": "module"
 }

@@ -3,71 +3,42 @@ package main
 import (
 	"context"
 	"crypto/ecdsa"
-	"encoding/json"
 	"fmt"
 	"log"
 	"math/big"
+	"os"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/joho/godotenv"
+	"github.com/node-real/megafuel-go-sdk/pkg/paymasterclient"
 )
 
-const YourPrivateKey = ""
-const TokenContractAddress = "0x.."
-const RecipientAddress = "0x.."
+var (
+	PaymasterURL string
+	ChainURL     string
 
-const web3ProviderEndpoint = "https://bsc-dataseed.bnbchain.org"
-const paymasterEndpoint = "https://bsc-megafuel.nodereal.io"
+	TokenContractAddress common.Address
+	RecipientAddress     common.Address
+	PrivateKey           string
+)
 
-// testnet endpoint
-// const web3ProviderEndpoint = "https://bsc-testnet-dataseed.bnbchain.org"
-// const paymasterEndpoint = "https://bsc-megafuel-testnet.nodereal.io'"
+func init() {
+	err := godotenv.Load(".env")
 
-type PaymasterClient struct {
-	*ethclient.Client
-	rpcClient *rpc.Client
-}
-
-type SponsorableInfo struct {
-	Sponsorable    bool   `json:"sponsorable"`
-	SponsorName    string `json:"sponsorName"`
-	SponsorIcon    string `json:"sponsorIcon"`
-	SponsorWebsite string `json:"sponsorWebsite"`
-}
-
-type Transaction struct {
-	To    *common.Address `json:"to"`
-	From  common.Address  `json:"from"`
-	Value *hexutil.Big    `json:"value"`
-	Gas   *hexutil.Uint64 `json:"gas"`
-	Data  *hexutil.Bytes  `json:"data"`
-}
-
-func NewPaymasterClient(url string) (*PaymasterClient, error) {
-	rpcClient, err := rpc.Dial(url)
 	if err != nil {
-		return nil, err
+		log.Fatalf("Error loading .env file")
 	}
 
-	ethClient := ethclient.NewClient(rpcClient)
+	PaymasterURL = os.Getenv("PAYMASTER_URL")
+	ChainURL = os.Getenv("CHAIN_URL")
 
-	return &PaymasterClient{
-		Client:    ethClient,
-		rpcClient: rpcClient,
-	}, nil
-}
-
-func (c *PaymasterClient) IsSponsorable(ctx context.Context, tx Transaction) (*SponsorableInfo, error) {
-	var result SponsorableInfo
-	err := c.rpcClient.CallContext(ctx, &result, "pm_isSponsorable", tx)
-	if err != nil {
-		return nil, err
-	}
-	return &result, nil
+	TokenContractAddress = common.HexToAddress(os.Getenv("TOKEN_CONTRACT_ADDRESS"))
+	RecipientAddress = common.HexToAddress(os.Getenv("RECIPIENT_ADDRESS"))
+	PrivateKey = os.Getenv("YOUR_PRIVATE_KEY")
 }
 
 func createERC20TransferData(to common.Address, amount *big.Int) ([]byte, error) {
@@ -85,20 +56,19 @@ func createERC20TransferData(to common.Address, amount *big.Int) ([]byte, error)
 }
 
 func main() {
-
 	// Connect to an Ethereum node (for transaction assembly)
-	client, err := ethclient.Dial(web3ProviderEndpoint)
+	client, err := ethclient.Dial(ChainURL)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum network: %v", err)
 	}
 	// Create a PaymasterClient (for transaction sending)
-	paymasterClient, err := NewPaymasterClient(paymasterEndpoint)
+	paymasterClient, err := paymasterclient.New(context.Background(), PaymasterURL)
 	if err != nil {
 		log.Fatalf("Failed to create PaymasterClient: %v", err)
 	}
 
 	// Load your private key
-	privateKey, err := crypto.HexToECDSA(YourPrivateKey)
+	privateKey, err := crypto.HexToECDSA(PrivateKey)
 	if err != nil {
 		log.Fatalf("Failed to load private key: %v", err)
 	}
@@ -109,18 +79,11 @@ func main() {
 		log.Fatal("Error casting public key to ECDSA")
 	}
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
-
-	// Token contract address
-	tokenAddress := common.HexToAddress(TokenContractAddress)
-
-	// Recipient address
-	toAddress := common.HexToAddress(RecipientAddress)
-
 	// Amount of tokens to transfer (adjust based on token decimals)
-	amount := big.NewInt(1000000000000000000) // 1 token for a token with 18 decimals
+	amount := big.NewInt(1e18) // 1 token for a token with 18 decimals
 
 	// Create ERC20 transfer data
-	data, err := createERC20TransferData(toAddress, amount)
+	data, err := createERC20TransferData(RecipientAddress, amount)
 	if err != nil {
 		log.Fatalf("Failed to create ERC20 transfer data: %v", err)
 	}
@@ -133,7 +96,7 @@ func main() {
 
 	// Create the transaction
 	gasPrice := big.NewInt(0)
-	tx := types.NewTransaction(nonce, tokenAddress, big.NewInt(0), 300000, gasPrice, data)
+	tx := types.NewTransaction(nonce, TokenContractAddress, big.NewInt(0), 300000, gasPrice, data)
 
 	// Get the chain ID
 	chainID, err := client.ChainID(context.Background())
@@ -147,10 +110,15 @@ func main() {
 		log.Fatalf("Failed to sign transaction: %v", err)
 	}
 
+	txInput, err := signedTx.MarshalBinary()
+	if err != nil {
+		log.Fatalf("Failed to marshal transaction: %v", err)
+	}
+
 	// Convert to Transaction struct for IsSponsorable check
 	gasLimit := tx.Gas()
-	sponsorableTx := Transaction{
-		To:    &tokenAddress,
+	sponsorableTx := paymasterclient.TransactionArgs{
+		To:    &TokenContractAddress,
 		From:  fromAddress,
 		Value: (*hexutil.Big)(big.NewInt(0)),
 		Gas:   (*hexutil.Uint64)(&gasLimit),
@@ -163,12 +131,11 @@ func main() {
 		log.Fatalf("Error checking sponsorable status: %v", err)
 	}
 
-	jsonInfo, _ := json.MarshalIndent(sponsorableInfo, "", "  ")
-	fmt.Printf("Sponsorable Information:\n%s\n", string(jsonInfo))
+	fmt.Printf("Sponsorable Information:\n%+v\n", sponsorableInfo)
 
 	if sponsorableInfo.Sponsorable {
 		// Send the transaction using PaymasterClient
-		err := paymasterClient.SendTransaction(context.Background(), signedTx)
+		_, err := paymasterClient.SendRawTransaction(context.Background(), txInput)
 		if err != nil {
 			log.Fatalf("Failed to send sponsorable transaction: %v", err)
 		}

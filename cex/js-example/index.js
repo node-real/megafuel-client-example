@@ -1,140 +1,78 @@
-const ethers = require('ethers');
-
-// Replace with the cex hot wallet private key (be cautious with private keys!)
-const hotwalletPrivateKey = 'HOT_WALLET_PRIVATE_KEY';
-// replace with user ERC20 withdraw address
-const userWithdrawAddress = 'USER_WITHDRAW_ADDRESS';
-// ERC20 token contract address (replace with the address of the token you want to send)
-const erc20TokenAddress = 'TOKEN_CONTRACT_ADDRESS';
-const policyID = 'SPONSOR_POLICY_ID'
-
-const paymasterEndpoint = 'https://bsc-megafuel.nodereal.io';
-const sponsorEndpoint = 'https://open-platform.nodereal.io/{SPONSOR_API_KEY}/megafuel';
-
-// testnet endpoint
-// const paymasterEndpoint = 'https://bsc-megafuel-testnet.nodereal.io';
-// const sponsorEndpoint = 'https://open-platform.nodereal.io/{SPONSOR_API_KEY}/megafuel-testnet';
-
-
-class SponsorProvider extends ethers.providers.JsonRpcProvider {
-  constructor(url) {
-    super(url);
-  }
-
-  async addToWhitelist(params) {
-    return this.send('pm_addToWhitelist', [params]);
-  }
-
-  async removeFromWhitelist(params) {
-    return this.send('pm_rmFromWhitelist', [params]);
-  }
-
-  async emptyWhitelist(params) {
-    return this.send('pm_emptyWhitelist', [params]);
-  }
-
-  async getWhitelist(params) {
-    return this.send('pm_getWhitelist', [params]);
-  }
-}
-
-class PaymasterProvider extends ethers.providers.JsonRpcProvider {
-  constructor(url) {
-    super(url);
-  }
-  async isSponsorable(transaction) {
-    const params = [{
-      to: transaction.to,
-      from: transaction.from,
-      value: transaction.value != null ? ethers.utils.hexlify(transaction.value) : '0x0',
-      gas: ethers.utils.hexlify(transaction.gasLimit || 0),
-      data: transaction.data || '0x'
-    }];
-
-    const result = await this.send('pm_isSponsorable', params);
-    return result;
-  }
-}
+import 'dotenv/config'
+import {ethers} from 'ethers'
+import {PaymasterClient, SponsorClient, WhitelistType} from 'megafuel-js-sdk'
 
 async function cexDoGaslessWithdrawTx() {
-
   // Provider for sending the transaction (e.g., could be a different network or provider)
-  const paymasterProvider = new PaymasterProvider(paymasterEndpoint);
-
-  const wallet = new ethers.Wallet(hotwalletPrivateKey);
+  const paymasterClient = new PaymasterClient(process.env.PAYMASTER_URL)
+  const network = await paymasterClient.getNetwork()
+  const wallet = new ethers.Wallet(process.env.HOTWALLET_PRIVATE_KEY)
   // ERC20 token ABI (only including the transfer function)
-  const tokenAbi = [
-    "function transfer(address to, uint256 amount) returns (bool)"
-  ];
-
+  const tokenAbi = ['function transfer(address to, uint256 amount) returns (bool)']
   // Create contract instance
-  const tokenContract = new ethers.Contract(erc20TokenAddress, tokenAbi, wallet);
-
+  const tokenContract = new ethers.Contract(process.env.TOKEN_CONTRACT_ADDRESS, tokenAbi, wallet)
   // Transaction details
-  const tokenAmount = ethers.utils.parseUnits('1.0', 18); // Amount of tokens to send (adjust decimals as needed)
+  const tokenAmount = ethers.parseUnits('1.0', 18) // Amount of tokens to send (adjust decimals as needed)
+  // Create the transaction object
+  const transaction = await tokenContract.transfer.populateTransaction(process.env.WITHDRAW_RECIPIENT_ADDRESS, tokenAmount)
+  const nonce = await paymasterClient.getTransactionCount(wallet.address, 'pending')
+
+  // Add nonce and gas settings
+  transaction.from = wallet.address
+  transaction.nonce = nonce
+  transaction.gasLimit = 100000 // Adjust gas limit as needed for token transfers
+  transaction.chainId = network.chainId
+  transaction.gasPrice = 0 // Set gas price to 0
 
   try {
-    // Get the pending nonce, strongly suggest to fetch nonce from paymaster endpoint when
-    // submitting multiple transactions in rapid succession, to ensure that the nonce are sequential.
-    const nonce = await paymasterProvider.getTransactionCount(wallet.address, 'pending');
-    const network = await paymasterProvider.getNetwork();
-
-    // Create the transaction object
-    const transaction = await tokenContract.populateTransaction.transfer(userWithdrawAddress, tokenAmount);
-
-    // Add nonce and gas settings
-    transaction.chainId = network.chainId;
-    transaction.nonce = nonce;
-    transaction.gasPrice = 0; // Set gas price to 0
-    transaction.gasLimit = 100000; // Adjust gas limit as needed for token transfers
-
-    try {
-      const sponsorableInfo = await paymasterProvider.isSponsorable(transaction);
-      console.log('Sponsorable Information:', sponsorableInfo);
-    } catch (error) {
-      console.error('Error checking sponsorable status:', error);
-    }
-
-    // Sign the transaction
-    const signedTx = await wallet.signTransaction(transaction);
-
-    // Send the raw transaction using the sending provider
-    const tx = await paymasterProvider.send('eth_sendRawTransaction', [signedTx]);
-    console.log('Transaction sent:', tx);
-
+    const sponsorableInfo = await paymasterClient.isSponsorable(transaction)
+    console.log('Sponsorable Information:', sponsorableInfo)
   } catch (error) {
-    console.error('Error sending transaction:', error);
+    console.error('Error checking sponsorable status:', error)
+  }
+
+  try {
+    // Sign the transaction
+    const signedTx = await wallet.signTransaction(transaction)
+    // Send the raw transaction using the sending provider
+    const tx = await paymasterClient.sendRawTransaction(signedTx)
+    console.log('Transaction sent:', tx)
+  } catch (error) {
+    console.error('Error sending transaction:', error)
   }
 }
 
 async function sponsorSetUpPolicyRules() {
-  const client = new SponsorProvider(sponsorEndpoint);
+  const paymasterClient = new PaymasterClient(process.env.PAYMASTER_URL)
+  const network = await paymasterClient.getNetwork()
+  const client = new SponsorClient(process.env.SPONSOR_URL, null,
+    {staticNetwork: ethers.Network.from(network.chainId)})
 
-  const wallet = new ethers.Wallet(hotwalletPrivateKey)
+  const wallet = new ethers.Wallet(process.env.HOTWALLET_PRIVATE_KEY)
   // sponsor the tx that interact with the stable coin ERC20 contract
   try {
     // You can empty the policy rules before re-try.
-    // await client.emptyWhitelist({
-    // policyUuid: policyID,
-    //  whitelistType: "FromAccountWhitelist",
-    // });
-    //await client.emptyWhitelist({
-    //  policyUuid: policyID,
-    //  whitelistType: "ToAccountWhitelist",
-    // });
-    // sponsor the tx that interact with the stable coin ERC20 contract
+    await client.emptyWhitelist({
+      PolicyUUID: process.env.POLICY_UUID,
+      WhitelistType: WhitelistType.FromAccountWhitelist,
+    });
+    await client.emptyWhitelist({
+      PolicyUUID: process.env.POLICY_UUID,
+      WhitelistType: WhitelistType.ToAccountWhitelist,
+    });
+
     const res1 = await client.addToWhitelist({
-      policyUuid: policyID,
-      whitelistType: "ToAccountWhitelist",
-      values: [erc20TokenAddress]
+      PolicyUUID: process.env.POLICY_UUID,
+      WhitelistType: WhitelistType.ToAccountWhitelist,
+      Values: [process.env.TOKEN_CONTRACT_ADDRESS]
     });
     console.log("Added ERC20 contract address to whitelist ", res1);
 
     // sponsor the tx that sent by hotwallet
     const res2 = await client.addToWhitelist({
-      policyUuid: policyID,
-      whitelistType: "FromAccountWhitelist",
-      values: [wallet.address]
+      PolicyUUID: process.env.POLICY_UUID,
+      WhitelistType: WhitelistType.FromAccountWhitelist,
+      Values: [wallet.address]
     });
     console.log("Added hotwallet to whitelist ", res2);
   } catch (error){
@@ -144,11 +82,11 @@ async function sponsorSetUpPolicyRules() {
 
 async function main() {
   try {
-    await sponsorSetUpPolicyRules();
-    await cexDoGaslessWithdrawTx();
+    await sponsorSetUpPolicyRules()
+    await cexDoGaslessWithdrawTx()
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error)
   }
 }
 
-main();
+main()
