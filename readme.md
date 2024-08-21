@@ -14,8 +14,9 @@ fees, using MegaFuel to manage the sponsorship policy.
 
 
 ## Network Endpoint
-BSC mainet: https://bsc-megafuel.nodereal.io
-BSC testnet: https://bsc-megafuel-testnet.nodereal.io
+
+- BSC mainet: https://bsc-megafuel.nodereal.io
+- BSC testnet: https://bsc-megafuel-testnet.nodereal.io
 
 ## Quick Start
 
