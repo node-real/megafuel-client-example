@@ -20,6 +20,13 @@ const YourPrivateKey = ""
 const TokenContractAddress = "0x.."
 const RecipientAddress = "0x.."
 
+const web3ProviderEndpoint = "https://bsc-dataseed.bnbchain.org"
+const paymasterEndpoint = "https://bsc-megafuel.nodereal.io"
+
+// testnet endpoint
+// const web3ProviderEndpoint = "https://bsc-testnet-dataseed.bnbchain.org"
+// const paymasterEndpoint = "https://bsc-megafuel-testnet.nodereal.io'"
+
 type PaymasterClient struct {
 	*ethclient.Client
 	rpcClient *rpc.Client
@@ -80,12 +87,12 @@ func createERC20TransferData(to common.Address, amount *big.Int) ([]byte, error)
 func main() {
 
 	// Connect to an Ethereum node (for transaction assembly)
-	client, err := ethclient.Dial("https://bsc-testnet-dataseed.bnbchain.org")
+	client, err := ethclient.Dial(web3ProviderEndpoint)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum network: %v", err)
 	}
 	// Create a PaymasterClient (for transaction sending)
-	paymasterClient, err := NewPaymasterClient("https://bsc-megafuel-testnet.nodereal.io")
+	paymasterClient, err := NewPaymasterClient(paymasterEndpoint)
 	if err != nil {
 		log.Fatalf("Failed to create PaymasterClient: %v", err)
 	}

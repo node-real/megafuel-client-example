@@ -6,8 +6,16 @@ const hotwalletPrivateKey = 'HOT_WALLET_PRIVATE_KEY';
 const userWithdrawAddress = 'USER_WITHDRAW_ADDRESS';
 // ERC20 token contract address (replace with the address of the token you want to send)
 const erc20TokenAddress = 'TOKEN_CONTRACT_ADDRESS';
-const sponsorEndpoint = 'https://open-platform.nodereal.io/{SPONSOR_API_KEY}/megafuel-testnet';
 const policyID = 'SPONSOR_POLICY_ID'
+
+const web3ProviderEndpoint = 'https://bsc-dataseed.bnbchain.org';
+const paymasterEndpoint = 'https://bsc-megafuel.nodereal.io';
+const sponsorEndpoint = 'https://open-platform.nodereal.io/{SPONSOR_API_KEY}/megafuel';
+
+// testnet endpoint
+// const web3ProviderEndpoint = 'https://bsc-testnet-dataseed.bnbchain.org';
+// const paymasterEndpoint = 'https://bsc-megafuel-testnet.nodereal.io';
+// const sponsorEndpoint = 'https://open-platform.nodereal.io/{SPONSOR_API_KEY}/megafuel-testnet';
 
 
 class SponsorProvider extends ethers.providers.JsonRpcProvider {
@@ -53,10 +61,10 @@ class PaymasterProvider extends ethers.providers.JsonRpcProvider {
 async function cexDoGaslessWithdrawTx() {
 
   // Provider for assembling the transaction (e.g., mainnet)
-  const assemblyProvider = new ethers.providers.JsonRpcProvider('https://bsc-testnet-dataseed.bnbchain.org');
+  const assemblyProvider = new ethers.providers.JsonRpcProvider(web3ProviderEndpoint);
 
   // Provider for sending the transaction (e.g., could be a different network or provider)
-  const paymasterProvider = new PaymasterProvider('https://bsc-megafuel-testnet.nodereal.io');
+  const paymasterProvider = new PaymasterProvider(paymasterEndpoint);
 
   const wallet = new ethers.Wallet(hotwalletPrivateKey, assemblyProvider);
   // ERC20 token ABI (only including the transfer function)

@@ -18,8 +18,16 @@ import (
 const TokenContractAddress = "0x.."
 const WithdrawRecipientAddress = "0x.."
 const SponsorPolicyId = ".."
-const SponsorAPIEndpoint = "https://open-platform.nodereal.io/{YOUR_API_KEY}/megafuel-testnet"
 const HotwalletPrivateKey = ".."
+
+const sponsorAPIEndpoint = "https://open-platform.nodereal.io/{Your_API_key}/megafuel"
+const web3ProviderEndpoint = "https://bsc-dataseed.bnbchain.org"
+const paymasterEndpoint = "https://bsc-megafuel.nodereal.io"
+
+// testnet endpoint
+// const sponsorAPIEndpoint = "https://open-platform.nodereal.io/{Your_API_key}/megafuel-testnet"
+// const web3ProviderEndpoint = "https://bsc-testnet-dataseed.bnbchain.org"
+// const paymasterEndpoint = "https://bsc-megafuel-testnet.nodereal.io'"
 
 func main() {
 	sponsorSetUpPolicyRules()
@@ -27,7 +35,7 @@ func main() {
 }
 
 func sponsorSetUpPolicyRules() {
-	sponsorClient, err := NewSponsorClient(SponsorAPIEndpoint)
+	sponsorClient, err := NewSponsorClient(sponsorAPIEndpoint)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -57,12 +65,12 @@ func sponsorSetUpPolicyRules() {
 func cexDoGaslessWithdrawl() {
 	withdrawAmount := big.NewInt(1e17)
 	// Connect to an Ethereum node (for transaction assembly)
-	client, err := ethclient.Dial("https://bsc-testnet-dataseed.bnbchain.org")
+	client, err := ethclient.Dial(web3ProviderEndpoint)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum network: %v", err)
 	}
 	// Create a PaymasterClient (for transaction sending)
-	paymasterClient, err := NewPaymasterClient("https://bsc-megafuel-testnet.nodereal.io")
+	paymasterClient, err := NewPaymasterClient(paymasterEndpoint)
 	if err != nil {
 		log.Fatalf("Failed to create PaymasterClient: %v", err)
 	}

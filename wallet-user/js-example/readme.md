@@ -3,8 +3,8 @@ This is a Js script to send BSC transactions with 0 gas price through Megafuel P
 
 ## Quick Start
 
-The example is performed on BSC testnet, please ensure you have some test ERC20 on BSC testnet. (You can get some 
-from the official faucet)
+If the example is performed on BSC testnet, please ensure you have some test ERC20 on BSC testnet. (You can get some 
+from the official faucet).
 
 1. Install the dependency.
     ```shell

@@ -7,6 +7,13 @@ const toAddress = 'RECIPIENT_ADDRESS';
 // ERC20 token contract address (replace with the address of the token you want to send)
 const tokenAddress = 'TOKEN_CONTRACT_ADDRESS';
 
+const web3ProviderEndpoint = 'https://bsc-dataseed.bnbchain.org';
+const paymasterEndpoint = 'https://bsc-megafuel.nodereal.io';
+
+// testnet endpoint
+// const web3ProviderEndpoint = 'https://bsc-testnet-dataseed.bnbchain.org';
+// const paymasterEndpoint = 'https://bsc-megafuel-testnet.nodereal.io';
+
 
 class PaymasterProvider extends ethers.providers.JsonRpcProvider {
   constructor(url) {
@@ -30,10 +37,10 @@ class PaymasterProvider extends ethers.providers.JsonRpcProvider {
 async function sendERC20Transaction() {
 
   // Provider for assembling the transaction (e.g., mainnet)
-  const assemblyProvider = new ethers.providers.JsonRpcProvider('https://bsc-testnet-dataseed.bnbchain.org');
+  const assemblyProvider = new ethers.providers.JsonRpcProvider(web3ProviderEndpoint);
 
   // Provider for sending the transaction (e.g., could be a different network or provider)
-  const paymasterProvider = new PaymasterProvider('https://bsc-megafuel-testnet.nodereal.io');
+  const paymasterProvider = new PaymasterProvider(paymasterEndpoint);
 
   const wallet = new ethers.Wallet(privateKey, assemblyProvider);
   // ERC20 token ABI (only including the transfer function)

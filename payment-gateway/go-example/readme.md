@@ -5,7 +5,7 @@ This repository contains a Go application demonstrating:
 
 ## Quick Start
 
-The example is performed on BSC testnet, please ensure you have some test ERC20 on BSC testnet. (You can get some
+If the example is performed on BSC testnet, please ensure you have some test ERC20 on BSC testnet. (You can get some
 from the official faucet)
 
 1. Install dependencies

@@ -18,8 +18,16 @@ import (
 const PaymentTokenContractAddress = "0x.."
 const PaymentRecipientAddress = "0x.."
 const PaymentSponsorPolicyId = ".."
-const SponsorAPIEndpoint = "https://open-platform.nodereal.io/{Your_API_key}/megafuel-testnet"
 const UserPrivateKey = "..."
+
+const sponsorAPIEndpoint = "https://open-platform.nodereal.io/{Your_API_key}/megafuel"
+const web3ProviderEndpoint = "https://bsc-dataseed.bnbchain.org"
+const paymasterEndpoint = "https://bsc-megafuel.nodereal.io"
+
+// testnet endpoint
+// const sponsorAPIEndpoint = "https://open-platform.nodereal.io/{Your_API_key}/megafuel-testnet"
+// const web3ProviderEndpoint = "https://bsc-testnet-dataseed.bnbchain.org"
+// const paymasterEndpoint = "https://bsc-megafuel-testnet.nodereal.io'"
 
 func main() {
 	receiver := common.HexToAddress(PaymentRecipientAddress)
@@ -31,7 +39,7 @@ func main() {
 }
 
 func paymentGatewaySetUpPolicyRules(receiver common.Address) {
-	sponsorClient, err := NewSponsorClient(SponsorAPIEndpoint)
+	sponsorClient, err := NewSponsorClient(sponsorAPIEndpoint)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,12 +96,12 @@ func paymentGatewaySetUpPolicyRules(receiver common.Address) {
 
 func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
 	// Connect to an Ethereum node (for transaction assembly)
-	client, err := ethclient.Dial("https://bsc-testnet-dataseed.bnbchain.org")
+	client, err := ethclient.Dial(web3ProviderEndpoint)
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum network: %v", err)
 	}
 	// Create a PaymasterClient (for transaction sending)
-	paymasterClient, err := NewPaymasterClient("https://bsc-megafuel-testnet.nodereal.io")
+	paymasterClient, err := NewPaymasterClient(paymasterEndpoint)
 	if err != nil {
 		log.Fatalf("Failed to create PaymasterClient: %v", err)
 	}
