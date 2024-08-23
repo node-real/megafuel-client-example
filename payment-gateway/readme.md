@@ -1,7 +1,7 @@
 # Payment Gateway Example
 
 In payment scenarios, it's most common for users to pay with stablecoins. However, users might not possess the 
-gas token of the specific blockchain network. Therefore, Megafuel allows payment gateways or other third parties 
+gas token of the specific blockchain network. Therefore, MegaFuel allows payment gateways or other third parties 
 to pay the gas fee on behalf of the users.
 
 ## Prepare Work

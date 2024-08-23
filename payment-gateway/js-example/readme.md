@@ -1,7 +1,7 @@
 # Js Example 
 This repository contains a Js application demonstrating:
 1. Payment Gateway manage the sponsor policy to sponsor any transaction that send BEP20 to them.
-2. User send ERC20 token transfers to payment gateway without pay gas fee through Megafuel paymaster.
+2. User send ERC20 token transfers to payment gateway without pay gas fee through MegaFuel paymaster.
 
 ## Quick Start
 
@@ -22,7 +22,7 @@ from the official faucet)
    - 'TOKEN_CONTRACT_ADDRESS' with the ERC20 token that the Payment Gateway support.
    - 'SPONSOR_API_KEY' to the API key created by the Payment Gateway in the Nodereal dashboard. create one 
      from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
-   - 'SPONSOR_POLICY_ID' to the policy ID created by the Payment Gateway on Megafuel Paymaster, create one
+   - 'SPONSOR_POLICY_ID' to the policy ID created by the Payment Gateway on MegaFuel Paymaster, create one
      from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
 
 3. Run script

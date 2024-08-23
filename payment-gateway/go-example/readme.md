@@ -17,7 +17,7 @@ from the official faucet)
 
    - Set "PaymentTokenContractAddress" to the ERC20 token contract address users will use for payment.
    - Set "PaymentRecipientAddress" to the receiver address for the Payment Gateway's generated payment link.
-   - Set "PaymentSponsorPolicyId" to the policy ID created by the Payment Gateway on Megafuel Paymaster, create one 
+   - Set "PaymentSponsorPolicyId" to the policy ID created by the Payment Gateway on MegaFuel Paymaster, create one 
    from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
    - Set "SponsorAPIEndpoint" to the API key created by the Payment Gateway in the Nodereal dashboard.
      create one from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.

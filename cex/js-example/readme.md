@@ -22,7 +22,7 @@ from the official faucet)
    - 'TOKEN_CONTRACT_ADDRESS' with the ERC20 token that the Payment Gateway support.
    - 'SPONSOR_API_KEY' to the API key created by the Sponsor in the Nodereal dashboard. create one 
      from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
-   - 'SPONSOR_POLICY_ID' to the policy ID created by the sponsor on Megafuel Paymaster, create one
+   - 'SPONSOR_POLICY_ID' to the policy ID created by the sponsor on MegaFuel Paymaster, create one
      from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
 
 3. Run script

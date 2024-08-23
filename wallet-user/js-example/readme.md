@@ -1,5 +1,5 @@
 # Js Example 
-This is a Js script to send BSC transactions with 0 gas price through Megafuel Paymaster.
+This is a Js script to send BSC transactions with 0 gas price through MegaFuel Paymaster.
 
 ## Quick Start
 

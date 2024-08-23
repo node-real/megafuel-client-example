@@ -1,6 +1,6 @@
-# Megafuel client Example
+# MegaFuel client Example
 
-This repository hosts a collection of examples implemented in both Golang and JavaScript for the [Megafuel Paymaster](https://docs.nodereal.io/docs/megafuel-overview).
+This repository hosts a collection of examples implemented in both Golang and JavaScript for the [MegaFuel Paymaster](https://docs.nodereal.io/docs/megafuel-overview).
 The client implementation follows the API standards of [BEP-414](https://github.com/bnb-chain/BEPs/blob/master/BEPs/BEP-414.md).
 The examples include:
 
@@ -30,7 +30,7 @@ Please get ERC20 token for test before you start:
 - [For payment gateway integration](./payment-gateway/readme.md)
 - [For Cex integration](./cex/readme.md)
 
-## More Docs about the Megafuel Paymaster
+## More Docs about the MegaFuel Paymaster
 - [Paymaster Overview](https://docs.nodereal.io/docs/megafuel-overview)
 - [Sponsor Policy Management](https://docs.nodereal.io/docs/megafuel-policy-management)
 - [Sponsor Guidelines](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines)

@@ -1,5 +1,5 @@
 # GO Example
-This repository contains a Go application demonstrating how to send gasless tx on BSC through Megafuel 
+This repository contains a Go application demonstrating how to send gasless tx on BSC through MegaFuel 
 paymaster.
 
 ## Quick Start

@@ -1,6 +1,6 @@
 # Wallet Client Example
 
-This package contains a Go and Js application demonstrating how to send gasless tx on BSC through Megafuel.
+This package contains a Go and Js application demonstrating how to send gasless tx on BSC through MegaFuel.
 
 ## Workflow
 
