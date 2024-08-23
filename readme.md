@@ -35,4 +35,4 @@ Please get ERC20 token for test before you start:
 - [Sponsor Policy Management](https://docs.nodereal.io/docs/megafuel-policy-management)
 - [Sponsor Guidelines](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines)
 - [Wallet Integration Guide](https://docs.nodereal.io/docs/wallet-integration)
-- [Paymaster API Spec](https://docs.nodereal.io/docs/megafuel-api)
+- [Paymaster API Spec](https://docs.nodereal.io/reference/eth-sendrawtransaction-megafuel)
