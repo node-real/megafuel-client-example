@@ -8,12 +8,10 @@ const userWithdrawAddress = 'USER_WITHDRAW_ADDRESS';
 const erc20TokenAddress = 'TOKEN_CONTRACT_ADDRESS';
 const policyID = 'SPONSOR_POLICY_ID'
 
-const web3ProviderEndpoint = 'https://bsc-dataseed.bnbchain.org';
 const paymasterEndpoint = 'https://bsc-megafuel.nodereal.io';
 const sponsorEndpoint = 'https://open-platform.nodereal.io/{SPONSOR_API_KEY}/megafuel';
 
 // testnet endpoint
-// const web3ProviderEndpoint = 'https://bsc-testnet-dataseed.bnbchain.org';
 // const paymasterEndpoint = 'https://bsc-megafuel-testnet.nodereal.io';
 // const sponsorEndpoint = 'https://open-platform.nodereal.io/{SPONSOR_API_KEY}/megafuel-testnet';
 
@@ -60,13 +58,10 @@ class PaymasterProvider extends ethers.providers.JsonRpcProvider {
 
 async function cexDoGaslessWithdrawTx() {
 
-  // Provider for assembling the transaction (e.g., mainnet)
-  const assemblyProvider = new ethers.providers.JsonRpcProvider(web3ProviderEndpoint);
-
   // Provider for sending the transaction (e.g., could be a different network or provider)
   const paymasterProvider = new PaymasterProvider(paymasterEndpoint);
 
-  const wallet = new ethers.Wallet(hotwalletPrivateKey, assemblyProvider);
+  const wallet = new ethers.Wallet(hotwalletPrivateKey);
   // ERC20 token ABI (only including the transfer function)
   const tokenAbi = [
     "function transfer(address to, uint256 amount) returns (bool)"
@@ -79,13 +74,16 @@ async function cexDoGaslessWithdrawTx() {
   const tokenAmount = ethers.utils.parseUnits('1.0', 18); // Amount of tokens to send (adjust decimals as needed)
 
   try {
-    // Get the current nonce for the sender's address
-    const nonce = await assemblyProvider.getTransactionCount(wallet.address);
+    // Get the pending nonce, strongly suggest to fetch nonce from paymaster endpoint when
+    // submitting multiple transactions in rapid succession, to ensure that the nonce are sequential.
+    const nonce = await paymasterProvider.getTransactionCount(wallet.address, 'pending');
+    const network = await paymasterProvider.getNetwork();
 
     // Create the transaction object
     const transaction = await tokenContract.populateTransaction.transfer(userWithdrawAddress, tokenAmount);
 
     // Add nonce and gas settings
+    transaction.chainId = network.chainId;
     transaction.nonce = nonce;
     transaction.gasPrice = 0; // Set gas price to 0
     transaction.gasLimit = 100000; // Adjust gas limit as needed for token transfers

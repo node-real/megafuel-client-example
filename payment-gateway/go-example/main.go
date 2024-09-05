@@ -12,7 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 const PaymentTokenContractAddress = "0x.."
@@ -21,12 +20,10 @@ const PaymentSponsorPolicyId = ".."
 const UserPrivateKey = "..."
 
 const sponsorAPIEndpoint = "https://open-platform.nodereal.io/{Your_API_key}/megafuel"
-const web3ProviderEndpoint = "https://bsc-dataseed.bnbchain.org"
 const paymasterEndpoint = "https://bsc-megafuel.nodereal.io"
 
 // testnet endpoint
 // const sponsorAPIEndpoint = "https://open-platform.nodereal.io/{Your_API_key}/megafuel-testnet"
-// const web3ProviderEndpoint = "https://bsc-testnet-dataseed.bnbchain.org"
 // const paymasterEndpoint = "https://bsc-megafuel-testnet.nodereal.io'"
 
 func main() {
@@ -95,11 +92,6 @@ func paymentGatewaySetUpPolicyRules(receiver common.Address) {
 }
 
 func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
-	// Connect to an Ethereum node (for transaction assembly)
-	client, err := ethclient.Dial(web3ProviderEndpoint)
-	if err != nil {
-		log.Fatalf("Failed to connect to the Ethereum network: %v", err)
-	}
 	// Create a PaymasterClient (for transaction sending)
 	paymasterClient, err := NewPaymasterClient(paymasterEndpoint)
 	if err != nil {
@@ -129,7 +121,7 @@ func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
 	}
 
 	// Get the latest nonce for the from address
-	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	nonce, err := paymasterClient.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
 		log.Fatalf("Failed to get nonce: %v", err)
 	}
@@ -139,7 +131,7 @@ func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
 	tx := types.NewTransaction(nonce, tokenAddress, big.NewInt(0), 300000, gasPrice, data)
 
 	// Get the chain ID
-	chainID, err := client.ChainID(context.Background())
+	chainID, err := paymasterClient.ChainID(context.Background())
 	if err != nil {
 		log.Fatalf("Failed to get chain ID: %v", err)
 	}
