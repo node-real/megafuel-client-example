@@ -1,27 +1,32 @@
 # GO Example
+
 This repository contains a Go application demonstrating:
+
 1. Sponsor manage the policy to sponsor any transaction sent by Cex hotwallets.
 2. Cex do token withdrawal without pay gas fee through paymaster.
 
 ## Quick Start
 
-If the example is performed on BSC testnet, please ensure you have some test ERC20 on BSC testnet. (You can get some
-from the official faucet)
+The example is performed on BSC testnet or BSC mainnet, please ensure you have some test ERC20 on them. (You can get
+some from the official faucet when using testnet)
 
 1. Install dependencies
     ```shell
     $ go mod tidy
     ```
-2. Configure the file
-   Before running the application, you need to edit the `main.go` to set up the following:
+2. Configure the .env file
+   Before running the application, you need to edit the `.env` to set up the following:
 
-   - Set "TokenContractAddress" to the ERC20 token contract address that users want to withdraw.
-   - Set "WithdrawRecipientAddress" to the receiver address of user's withdrawal request.
-   - Set "SponsorPolicyId" to the policy ID created by the sponsor on MegaFuel Paymaster, create one 
-   from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
-   - Set "SponsorAPIEndpoint" to the API key created by the sponsor in the Nodereal dashboard.
-     create one from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
-   - Set "HotwalletPrivateKey" to the Cex's hotwallet private key, ensuring this wallet contains the required ERC20 tokens.
+    - 'PAYMASTER_URL' with the Paymaster URL.
+    - 'CHAIN_URL' with the BSC testnet or BSC mainnet chain URL.
+    - 'SPONSOR_URL' to the API key created by the sponsor in the Nodereal dashboard. create one
+      from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
+    - 'POLICY_UUID' to the policy ID created by the sponsor on Megafuel Paymaster, create one
+      from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
+    - 'TOKEN_CONTRACT_ADDRESS' to the ERC20 token contract address that users want to withdraw.
+    - 'WITHDRAW_RECIPIENT_ADDRESS' to the receiver address of user's withdrawal request.
+    - 'HOTWALLET_PRIVATE_KEY' to the Cex's hotwallet private key, ensuring this wallet contains the required ERC20
+      tokens.
 
 3. Run the example
    ```
