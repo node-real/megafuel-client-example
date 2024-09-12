@@ -24,8 +24,15 @@ async function cexDoGaslessWithdrawTx() {
   transaction.chainId = network.chainId
   transaction.gasPrice = 0 // Set gas price to 0
 
+  const safeTransaction = {
+    ...transaction,
+    gasLimit: transaction.gasLimit.toString(),
+    chainId: transaction.chainId.toString(),
+    gasPrice: transaction.gasPrice.toString(),
+  }
+
   try {
-    const sponsorableInfo = await paymasterClient.isSponsorable(transaction)
+    const sponsorableInfo = await paymasterClient.isSponsorable(safeTransaction)
     console.log('Sponsorable Information:', sponsorableInfo)
   } catch (error) {
     console.error('Error checking sponsorable status:', error)

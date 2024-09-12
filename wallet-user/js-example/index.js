@@ -4,7 +4,7 @@ import { PaymasterClient } from 'megafuel-js-sdk';
 
 async function sendERC20Transaction() {
   // Provider for sending the transaction (e.g., could be a different network or provider)
-  const paymasterProvider = new PaymasterClient(process.env.PAYMASTER_URL);
+  const paymasterClient = new PaymasterClient(process.env.PAYMASTER_URL);
   const network = await paymasterClient.getNetwork()
   const wallet = new ethers.Wallet(process.env.YOUR_PRIVATE_KEY);
   // ERC20 token ABI (only including the transfer function)
@@ -24,8 +24,15 @@ async function sendERC20Transaction() {
   transaction.chainId = network.chainId
   transaction.gasPrice = 0 // Set gas price to 0
 
+  const safeTransaction = {
+    ...transaction,
+    gasLimit: transaction.gasLimit.toString(),
+    chainId: transaction.chainId.toString(),
+    gasPrice: transaction.gasPrice.toString(),
+  }
+
   try {
-    const sponsorableInfo = await paymasterProvider.isSponsorable(transaction);
+    const sponsorableInfo = await paymasterClient.isSponsorable(safeTransaction);
     console.log('Sponsorable Information:', sponsorableInfo);
   } catch (error) {
     console.error('Error checking sponsorable status:', error);
@@ -35,7 +42,7 @@ async function sendERC20Transaction() {
     // Sign the transaction
     const signedTx = await wallet.signTransaction(transaction);
     // Send the raw transaction using the sending provider
-    const tx = await paymasterProvider.sendRawTransaction(signedTx);
+    const tx = await paymasterClient.sendRawTransaction(signedTx);
     console.log('Transaction sent:', tx);
 
   } catch (error) {
