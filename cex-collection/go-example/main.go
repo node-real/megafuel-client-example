@@ -24,11 +24,10 @@ var (
 	PaymasterURL string
 	SponsorURL   string
 
-	PolicyUUID uuid.UUID
-
-	TokenContractAddress     common.Address
-	WithdrawRecipientAddress common.Address
-	HotwalletPrivateKey      string
+	PolicyUUID                 uuid.UUID
+	TokenContractAddress       common.Address
+	ConsolidationWalletAddress common.Address
+	DepositWalletPrivateKey    string
 )
 
 func init() {
@@ -47,13 +46,13 @@ func init() {
 	}
 
 	TokenContractAddress = common.HexToAddress(os.Getenv("TOKEN_CONTRACT_ADDRESS"))
-	WithdrawRecipientAddress = common.HexToAddress(os.Getenv("WITHDRAW_RECIPIENT_ADDRESS"))
-	HotwalletPrivateKey = os.Getenv("HOTWALLET_PRIVATE_KEY")
+	ConsolidationWalletAddress = common.HexToAddress(os.Getenv("CONSOLIDATION_WALLET_ADDRESS"))
+	DepositWalletPrivateKey = os.Getenv("DEPOSIT_WALLET_PRIVATE_KEY")
 }
 
 func main() {
 	sponsorSetUpPolicyRules()
-	cexDoGaslessWithdrawl()
+	cexDoGaslessTransfer()
 }
 
 func sponsorSetUpPolicyRules() {
@@ -71,22 +70,29 @@ func sponsorSetUpPolicyRules() {
 	if err != nil || !success {
 		log.Fatal("failed to add token contract whitelist", err)
 	}
-
-	// sponsor the tx that from hotwallets
-	fromAddress := getAddressFromPrivateKey(HotwalletPrivateKey)
-
+	// add transfer signature
 	success, err = sponsorClient.AddToWhitelist(context.Background(), sponsorclient.WhiteListArgs{
 		PolicyUUID:    PolicyUUID,
-		WhitelistType: sponsorclient.FromAccountWhitelist,
-		Values:        []string{fromAddress.String()},
+		WhitelistType: sponsorclient.ContractMethodSigWhitelist,
+		Values:        []string{"0xa9059cbb"},
 	})
 	if err != nil || !success {
 		log.Fatal("failed to add contract method whitelist")
 	}
+
+	// sponsor the tx whose BEP20 receiver is consolidation wallets
+	success, err = sponsorClient.AddToWhitelist(context.Background(), sponsorclient.WhiteListArgs{
+		PolicyUUID:    PolicyUUID,
+		WhitelistType: sponsorclient.BEP20ReceiverWhiteList,
+		Values:        []string{ConsolidationWalletAddress.String()},
+	})
+	if err != nil || !success {
+		log.Fatal("failed to BEP20 receiver whitelist")
+	}
 }
 
-func cexDoGaslessWithdrawl() {
-	withdrawAmount := big.NewInt(1e17)
+func cexDoGaslessTransfer() {
+	transferAmount := big.NewInt(1e17)
 
 	// Create a PaymasterClient (for transaction sending)
 	paymasterClient, err := paymasterclient.New(context.Background(), PaymasterURL)
@@ -95,15 +101,15 @@ func cexDoGaslessWithdrawl() {
 	}
 
 	// Load your private key
-	privateKey, err := crypto.HexToECDSA(HotwalletPrivateKey)
+	privateKey, err := crypto.HexToECDSA(DepositWalletPrivateKey)
 	if err != nil {
 		log.Fatalf("Failed to load private key: %v", err)
 	}
 
-	fromAddress := getAddressFromPrivateKey(HotwalletPrivateKey)
+	fromAddress := getAddressFromPrivateKey(DepositWalletPrivateKey)
 
 	// Create ERC20 transfer data
-	data, err := createERC20TransferData(WithdrawRecipientAddress, withdrawAmount)
+	data, err := createERC20TransferData(ConsolidationWalletAddress, transferAmount)
 	if err != nil {
 		log.Fatalf("Failed to create ERC20 transfer data: %v", err)
 	}
