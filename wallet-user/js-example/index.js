@@ -12,10 +12,10 @@ async function sendERC20Transaction() {
   // Create contract instance
   const tokenContract = new ethers.Contract(process.env.TOKEN_CONTRACT_ADDRESS, tokenAbi, wallet);
   // Transaction details
-  const tokenAmount = ethers.parseUnits('1.0', 18); // Amount of tokens to send (adjust decimals as needed)
+  const tokenAmount = ethers.parseUnits('1.0', 17); // Amount of tokens to send (adjust decimals as needed)
   // Create the transaction object
-  const transaction = await tokenContract.transfer.populateTransaction(process.env.RECIPIENT_ADDRESS, tokenAmount)
-  const nonce = await paymasterClient.getTransactionCount(wallet.address, 'pending')
+  let transaction = await tokenContract.transfer.populateTransaction(process.env.RECIPIENT_ADDRESS, tokenAmount)
+  let nonce = await paymasterClient.getTransactionCount(wallet.address, 'pending')
 
   // Add nonce and gas settings
   transaction.from = wallet.address
@@ -32,18 +32,15 @@ async function sendERC20Transaction() {
   }
 
   try {
-    const sponsorableInfo = await paymasterClient.isSponsorable(safeTransaction);
-    console.log('Sponsorable Information:', sponsorableInfo);
-  } catch (error) {
-    console.error('Error checking sponsorable status:', error);
-  }
-
-    try {
     // Sign the transaction
-    const signedTx = await wallet.signTransaction(transaction);
-    // Send the raw transaction using the sending provider
-    const tx = await paymasterClient.sendRawTransaction(signedTx);
-    console.log('Transaction sent:', tx);
+    for (let i = 0; i < 2; i++) {
+      transaction.nonce = nonce
+      let signedTx = await wallet.signTransaction(transaction);
+      // Send the raw transaction using the sending provider
+      let tx = await paymasterClient.sendRawTransaction(signedTx);
+      console.log('Transaction sent:', tx);
+      nonce ++;
+    }
 
   } catch (error) {
     console.error('Error sending transaction:', error);
