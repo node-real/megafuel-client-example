@@ -142,8 +142,11 @@ func walletUserDoGaslessTx() {
 	fmt.Printf("Sponsorable Information:\n%+v\n", sponsorableInfo)
 
 	if sponsorableInfo.Sponsorable {
-		// Send the transaction using PaymasterClient
-		_, err = paymasterClient.SendRawTransaction(context.Background(), txInput, &paymasterclient.TransactionOptions{UserAgent: "MegaFuel/v1.2.2"})
+		// We strongly encourage you to set the UserAgent value. It should represent
+		// your wallet name or brand name. This information is for further statistical
+		// analysis and insight. Setting a unique UserAgent will help MegaFuel to
+		// better understand wallet usage patterns and improve service.
+		_, err = paymasterClient.SendRawTransaction(context.Background(), txInput, &paymasterclient.TransactionOptions{UserAgent: "myWalletName/v1.0.0"})
 		if err != nil {
 			log.Fatalf("Failed to send sponsorable transaction: %v", err)
 		}

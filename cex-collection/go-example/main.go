@@ -22,10 +22,8 @@ import (
 
 var (
 	SponsorURL string
-	ChainID    string
 
 	PolicyUUID                 uuid.UUID
-	PrivatePolicyUUID          uuid.UUID
 	TokenContractAddress       common.Address
 	ConsolidationWalletAddress common.Address
 	DepositWalletPrivateKey    string
@@ -39,15 +37,10 @@ func init() {
 	}
 
 	SponsorURL = os.Getenv("SPONSOR_URL")
-	ChainID = os.Getenv("CHAIN_ID")
 
 	PolicyUUID, err = uuid.FromString(os.Getenv("POLICY_UUID"))
 	if err != nil {
 		log.Fatalf("Error parsing POLICY_UUID")
-	}
-	PrivatePolicyUUID, err = uuid.FromString(os.Getenv("PRIVATE_POLICY_UUID"))
-	if err != nil {
-		log.Fatalf("Error parsing PRIVATE_POLICY_UUID")
 	}
 
 	TokenContractAddress = common.HexToAddress(os.Getenv("TOKEN_CONTRACT_ADDRESS"))
@@ -100,8 +93,7 @@ func cexDoPrivatePolicyGaslessTransfer() {
 	transferAmount := big.NewInt(1e17)
 
 	// Create a PaymasterClient (for transaction sending)
-	url := fmt.Sprintf("%s/%s", SponsorURL, ChainID)
-	privatePaymasterClient, err := paymasterclient.NewPrivatePaymaster(context.Background(), url, PrivatePolicyUUID.String())
+	privatePaymasterClient, err := paymasterclient.NewPrivatePaymaster(context.Background(), SponsorURL, PolicyUUID.String())
 	if err != nil {
 		log.Fatalf("Failed to create PaymasterClient: %v", err)
 	}
@@ -168,7 +160,7 @@ func cexDoPrivatePolicyGaslessTransfer() {
 
 	if sponsorableInfo.Sponsorable {
 		// Send the transaction using PaymasterClient
-		_, err = privatePaymasterClient.SendRawTransaction(context.Background(), txInput, &paymasterclient.TransactionOptions{UserAgent: "MegaFuel/v1.2.2"})
+		_, err = privatePaymasterClient.SendRawTransaction(context.Background(), txInput, nil)
 		if err != nil {
 			log.Fatalf("Failed to send sponsorable transaction: %v", err)
 		}

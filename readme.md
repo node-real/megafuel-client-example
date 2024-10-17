@@ -18,6 +18,10 @@ fees, using MegaFuel to manage the sponsorship policy.
 - BSC mainet: https://bsc-megafuel.nodereal.io
 - BSC testnet: https://bsc-megafuel-testnet.nodereal.io
 
+## Sponsor Endpoint
+- BSC mainnet: https://open-platform-ap.nodereal.io/{$apikey}/megafuel/56
+- BSC testnet: https://open-platform-ap.nodereal.io/{$apikey}/megafuel-testnet/97
+
 ## Quick Start
 
 Please get ERC20 token for test before you start:

@@ -41,8 +41,12 @@ async function sendERC20Transaction() {
     try {
     // Sign the transaction
     const signedTx = await wallet.signTransaction(transaction);
+      // We strongly encourage you to set the UserAgent value. It should represent
+      // your wallet name or brand name. This information is for further statistical
+      // analysis and insight. Setting a unique UserAgent will help MegaFuel to
+      // better understand wallet usage patterns and improve service.
       const txOpt = {
-        UserAgent: "TEST USER AGENT"
+        UserAgent: "myWalletName/v1.0.0"
       }
       // Send the raw transaction using the sending provider
       const tx = await paymasterClient.sendRawTransaction(signedTx, txOpt);
