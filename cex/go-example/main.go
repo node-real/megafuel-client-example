@@ -21,8 +21,7 @@ import (
 )
 
 var (
-	PaymasterURL string
-	SponsorURL   string
+	SponsorURL string
 
 	PolicyUUID uuid.UUID
 
@@ -38,7 +37,6 @@ func init() {
 		log.Fatalf("Error loading .env file")
 	}
 
-	PaymasterURL = os.Getenv("PAYMASTER_URL")
 	SponsorURL = os.Getenv("SPONSOR_URL")
 
 	PolicyUUID, err = uuid.FromString(os.Getenv("POLICY_UUID"))
@@ -53,7 +51,7 @@ func init() {
 
 func main() {
 	sponsorSetUpPolicyRules()
-	cexDoGaslessWithdrawl()
+	cexDoPrivatePolicyGaslessWithdrawl()
 }
 
 func sponsorSetUpPolicyRules() {
@@ -85,11 +83,26 @@ func sponsorSetUpPolicyRules() {
 	}
 }
 
-func cexDoGaslessWithdrawl() {
+func getAddressFromPrivateKey(pk string) common.Address {
+	// Load your private key
+	privateKey, err := crypto.HexToECDSA(pk)
+	if err != nil {
+		log.Fatalf("Failed to load private key: %v", err)
+	}
+
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		log.Fatal("Error casting public key to ECDSA")
+	}
+	return crypto.PubkeyToAddress(*publicKeyECDSA)
+}
+
+func cexDoPrivatePolicyGaslessWithdrawl() {
 	withdrawAmount := big.NewInt(1e17)
 
 	// Create a PaymasterClient (for transaction sending)
-	paymasterClient, err := paymasterclient.New(context.Background(), PaymasterURL)
+	privatePaymasterClient, err := paymasterclient.NewPrivatePaymaster(context.Background(), SponsorURL, PolicyUUID.String())
 	if err != nil {
 		log.Fatalf("Failed to create PaymasterClient: %v", err)
 	}
@@ -109,7 +122,7 @@ func cexDoGaslessWithdrawl() {
 	}
 
 	// Get the latest nonce for the from address
-	nonce, err := paymasterClient.GetTransactionCount(context.Background(), fromAddress, rpc.BlockNumberOrHashWithNumber(rpc.PendingBlockNumber))
+	nonce, err := privatePaymasterClient.GetTransactionCount(context.Background(), fromAddress, rpc.BlockNumberOrHashWithNumber(rpc.PendingBlockNumber))
 	if err != nil {
 		log.Fatalf("Failed to get nonce: %v", err)
 	}
@@ -119,7 +132,7 @@ func cexDoGaslessWithdrawl() {
 	tx := types.NewTransaction(nonce, TokenContractAddress, big.NewInt(0), 300000, gasPrice, data)
 
 	// Get the chain ID
-	chainID, err := paymasterClient.ChainID(context.Background())
+	chainID, err := privatePaymasterClient.ChainID(context.Background())
 	if err != nil {
 		log.Fatalf("Failed to get chain ID: %v", err)
 	}
@@ -146,7 +159,7 @@ func cexDoGaslessWithdrawl() {
 	}
 
 	// Check if the transaction is sponsorable
-	sponsorableInfo, err := paymasterClient.IsSponsorable(context.Background(), sponsorableTx)
+	sponsorableInfo, err := privatePaymasterClient.IsSponsorable(context.Background(), sponsorableTx)
 	if err != nil {
 		log.Fatalf("Error checking sponsorable status: %v", err)
 	}
@@ -156,7 +169,7 @@ func cexDoGaslessWithdrawl() {
 
 	if sponsorableInfo.Sponsorable {
 		// Send the transaction using PaymasterClient
-		_, err := paymasterClient.SendRawTransaction(context.Background(), txInput)
+		_, err = privatePaymasterClient.SendRawTransaction(context.Background(), txInput, nil)
 		if err != nil {
 			log.Fatalf("Failed to send sponsorable transaction: %v", err)
 		}
@@ -164,21 +177,6 @@ func cexDoGaslessWithdrawl() {
 	} else {
 		fmt.Println("Transaction is not sponsorable. You may need to send it as a regular transaction.")
 	}
-}
-
-func getAddressFromPrivateKey(pk string) common.Address {
-	// Load your private key
-	privateKey, err := crypto.HexToECDSA(pk)
-	if err != nil {
-		log.Fatalf("Failed to load private key: %v", err)
-	}
-
-	publicKey := privateKey.Public()
-	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
-	if !ok {
-		log.Fatal("Error casting public key to ECDSA")
-	}
-	return crypto.PubkeyToAddress(*publicKeyECDSA)
 }
 
 func createERC20TransferData(to common.Address, amount *big.Int) ([]byte, error) {

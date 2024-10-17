@@ -13,6 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/gofrs/uuid"
 	"github.com/joho/godotenv"
 	"github.com/node-real/megafuel-go-sdk/pkg/paymasterclient"
@@ -151,8 +152,8 @@ func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
 		log.Fatalf("Failed to create ERC20 transfer data: %v", err)
 	}
 
-	// Get the latest nonce for the from address
-	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	blockNumber := rpc.PendingBlockNumber
+	nonce, err := paymasterClient.GetTransactionCount(context.Background(), fromAddress, rpc.BlockNumberOrHash{BlockNumber: &blockNumber})
 	if err != nil {
 		log.Fatalf("Failed to get nonce: %v", err)
 	}
@@ -196,8 +197,11 @@ func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
 	fmt.Printf("Sponsorable Information:\n%+v\n", sponsorableInfo)
 
 	if sponsorableInfo.Sponsorable {
-		// Send the transaction using PaymasterClient
-		_, err := paymasterClient.SendRawTransaction(context.Background(), txInput)
+		// We strongly encourage you to set the UserAgent value. It should represent
+		// your wallet name or brand name. This information is for further statistical
+		// analysis and insight. Setting a unique UserAgent will help MegaFuel to
+		// better understand wallet usage patterns and improve service.
+		_, err = paymasterClient.SendRawTransaction(context.Background(), txInput, &paymasterclient.TransactionOptions{UserAgent: "myWalletName/v1.0.0"})
 		if err != nil {
 			log.Fatalf("Failed to send sponsorable transaction: %v", err)
 		}

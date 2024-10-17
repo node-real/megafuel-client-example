@@ -13,6 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/joho/godotenv"
 	"github.com/node-real/megafuel-go-sdk/pkg/paymasterclient"
 )
@@ -35,6 +36,9 @@ func init() {
 
 	PaymasterURL = os.Getenv("PAYMASTER_URL")
 	ChainURL = os.Getenv("CHAIN_URL")
+	if err != nil {
+		log.Fatalf("Error parsing PRIVATE_POLICY_UUID")
+	}
 
 	TokenContractAddress = common.HexToAddress(os.Getenv("TOKEN_CONTRACT_ADDRESS"))
 	RecipientAddress = common.HexToAddress(os.Getenv("RECIPIENT_ADDRESS"))
@@ -56,6 +60,10 @@ func createERC20TransferData(to common.Address, amount *big.Int) ([]byte, error)
 }
 
 func main() {
+	walletUserDoGaslessTx()
+}
+
+func walletUserDoGaslessTx() {
 	// Connect to an Ethereum node (for transaction assembly)
 	client, err := ethclient.Dial(ChainURL)
 	if err != nil {
@@ -88,8 +96,8 @@ func main() {
 		log.Fatalf("Failed to create ERC20 transfer data: %v", err)
 	}
 
-	// Get the latest nonce for the from address
-	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	blockNumber := rpc.PendingBlockNumber
+	nonce, err := paymasterClient.GetTransactionCount(context.Background(), fromAddress, rpc.BlockNumberOrHash{BlockNumber: &blockNumber})
 	if err != nil {
 		log.Fatalf("Failed to get nonce: %v", err)
 	}
@@ -134,8 +142,11 @@ func main() {
 	fmt.Printf("Sponsorable Information:\n%+v\n", sponsorableInfo)
 
 	if sponsorableInfo.Sponsorable {
-		// Send the transaction using PaymasterClient
-		_, err := paymasterClient.SendRawTransaction(context.Background(), txInput)
+		// We strongly encourage you to set the UserAgent value. It should represent
+		// your wallet name or brand name. This information is for further statistical
+		// analysis and insight. Setting a unique UserAgent will help MegaFuel to
+		// better understand wallet usage patterns and improve service.
+		_, err = paymasterClient.SendRawTransaction(context.Background(), txInput, &paymasterclient.TransactionOptions{UserAgent: "myWalletName/v1.0.0"})
 		if err != nil {
 			log.Fatalf("Failed to send sponsorable transaction: %v", err)
 		}

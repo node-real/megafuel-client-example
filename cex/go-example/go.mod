@@ -6,7 +6,7 @@ require (
 	github.com/ethereum/go-ethereum v1.14.8
 	github.com/gofrs/uuid v4.3.0+incompatible
 	github.com/joho/godotenv v1.5.1
-	github.com/node-real/megafuel-go-sdk v1.0.1
+	github.com/node-real/megafuel-go-sdk v1.0.2
 )
 
 require (

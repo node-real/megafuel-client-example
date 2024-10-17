@@ -10,7 +10,7 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "ethers": "^6.3.0",
-    "megafuel-js-sdk": "^1.0.5"
+    "megafuel-js-sdk": "^1.0.6"
   },
   "type": "module"
 }

@@ -4,7 +4,7 @@ import {PaymasterClient, SponsorClient, WhitelistType} from 'megafuel-js-sdk';
 
 async function userDoGaslessPayment() {
   // Provider for sending the transaction (e.g., could be a different network or provider)
-  const paymasterClient = new PaymasterClient(process.env.PAYMASTER_URL);
+  const paymasterClient = PaymasterClient.new(process.env.PAYMASTER_URL);
   const network = await paymasterClient.getNetwork()
   const wallet = new ethers.Wallet(process.env.USER_PRIVATE_KEY);
   // ERC20 token ABI (only including the transfer function)
@@ -41,8 +41,15 @@ async function userDoGaslessPayment() {
   try {
     // Sign the transaction
     const signedTx = await wallet.signTransaction(transaction);
+    // We strongly encourage you to set the UserAgent value. It should represent
+    // your wallet name or brand name. This information is for further statistical
+    // analysis and insight. Setting a unique UserAgent will help MegaFuel to
+    // better understand wallet usage patterns and improve service.
+    const txOpt = {
+      UserAgent: "myWalletName/v1.0.0"
+    }
     // Send the raw transaction using the sending provider
-    const tx = await paymasterClient.sendRawTransaction(signedTx);
+    const tx = await paymasterClient.sendRawTransaction(signedTx, txOpt);
     console.log('Transaction sent:', tx);
   } catch (error) {
     console.error('Error sending transaction:', error);

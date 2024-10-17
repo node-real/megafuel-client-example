@@ -3,8 +3,11 @@ import {ethers} from 'ethers'
 import {PaymasterClient, SponsorClient, WhitelistType} from 'megafuel-js-sdk'
 
 async function cexDoGaslessTransferTx() {
+  const chainID = process.env.CHAIN_ID
+  const policyUUID = process.env.POLICY_UUID
+  const sponsorUrl = process.env.SPONSOR_URL
   // Provider for sending the transaction (e.g., could be a different network or provider)
-  const paymasterClient = new PaymasterClient(process.env.PAYMASTER_URL)
+  const paymasterClient = PaymasterClient.newPrivatePaymaster(sponsorUrl, policyUUID,  ethers.Network.from(Number(chainID)), {staticNetwork: ethers.Network.from(Number(chainID))})
   const network = await paymasterClient.getNetwork()
 
   const wallet = new ethers.Wallet(process.env.DEPOSIT_WALLET_PRIVATE_KEY)
