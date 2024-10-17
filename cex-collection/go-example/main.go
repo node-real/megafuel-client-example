@@ -21,9 +21,8 @@ import (
 )
 
 var (
-	PaymasterURL string
-	SponsorURL   string
-	ChainID      string
+	SponsorURL string
+	ChainID    string
 
 	PolicyUUID                 uuid.UUID
 	PrivatePolicyUUID          uuid.UUID
@@ -39,7 +38,6 @@ func init() {
 		log.Fatalf("Error loading .env file")
 	}
 
-	PaymasterURL = os.Getenv("PAYMASTER_URL")
 	SponsorURL = os.Getenv("SPONSOR_URL")
 	ChainID = os.Getenv("CHAIN_ID")
 
@@ -59,7 +57,6 @@ func init() {
 
 func main() {
 	sponsorSetUpPolicyRules()
-	cexDoGaslessTransfer()
 	cexDoPrivatePolicyGaslessTransfer()
 }
 
@@ -96,87 +93,6 @@ func sponsorSetUpPolicyRules() {
 	})
 	if err != nil || !success {
 		log.Fatal("failed to BEP20 receiver whitelist")
-	}
-}
-
-func cexDoGaslessTransfer() {
-	transferAmount := big.NewInt(1e17)
-
-	// Create a PaymasterClient (for transaction sending)
-	paymasterClient, err := paymasterclient.New(context.Background(), PaymasterURL)
-	if err != nil {
-		log.Fatalf("Failed to create PaymasterClient: %v", err)
-	}
-
-	// Load your private key
-	privateKey, err := crypto.HexToECDSA(DepositWalletPrivateKey)
-	if err != nil {
-		log.Fatalf("Failed to load private key: %v", err)
-	}
-
-	fromAddress := getAddressFromPrivateKey(DepositWalletPrivateKey)
-
-	// Create ERC20 transfer data
-	data, err := createERC20TransferData(ConsolidationWalletAddress, transferAmount)
-	if err != nil {
-		log.Fatalf("Failed to create ERC20 transfer data: %v", err)
-	}
-
-	// Get the latest nonce for the from address
-	nonce, err := paymasterClient.GetTransactionCount(context.Background(), fromAddress, rpc.BlockNumberOrHashWithNumber(rpc.PendingBlockNumber))
-	if err != nil {
-		log.Fatalf("Failed to get nonce: %v", err)
-	}
-
-	// Create the transaction
-	gasPrice := big.NewInt(0)
-	tx := types.NewTransaction(nonce, TokenContractAddress, big.NewInt(0), 300000, gasPrice, data)
-
-	// Get the chain ID
-	chainID, err := paymasterClient.ChainID(context.Background())
-	if err != nil {
-		log.Fatalf("Failed to get chain ID: %v", err)
-	}
-
-	// Sign the transaction
-	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
-	if err != nil {
-		log.Fatalf("Failed to sign transaction: %v", err)
-	}
-
-	txInput, err := signedTx.MarshalBinary()
-	if err != nil {
-		log.Fatalf("Failed to marshal transaction: %v", err)
-	}
-
-	// Convert to Transaction struct for IsSponsorable check
-	gasLimit := tx.Gas()
-	sponsorableTx := paymasterclient.TransactionArgs{
-		To:    &TokenContractAddress,
-		From:  fromAddress,
-		Value: (*hexutil.Big)(big.NewInt(0)),
-		Gas:   (*hexutil.Uint64)(&gasLimit),
-		Data:  (*hexutil.Bytes)(&data),
-	}
-
-	// Check if the transaction is sponsorable
-	sponsorableInfo, err := paymasterClient.IsSponsorable(context.Background(), sponsorableTx)
-	if err != nil {
-		log.Fatalf("Error checking sponsorable status: %v", err)
-	}
-
-	jsonInfo, _ := json.MarshalIndent(sponsorableInfo, "", "  ")
-	fmt.Printf("Sponsorable Information:\n%s\n", string(jsonInfo))
-
-	if sponsorableInfo.Sponsorable {
-		// Send the transaction using PaymasterClient
-		_, err = paymasterClient.SendRawTransaction(context.Background(), txInput, &paymasterclient.TransactionOptions{UserAgent: "MegaFuel/v1.2.2"})
-		if err != nil {
-			log.Fatalf("Failed to send sponsorable transaction: %v", err)
-		}
-		fmt.Printf("Sponsorable transaction sent: %s\n", signedTx.Hash())
-	} else {
-		fmt.Println("Transaction is not sponsorable. You may need to send it as a regular transaction.")
 	}
 }
 
