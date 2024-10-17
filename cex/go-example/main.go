@@ -8,7 +8,6 @@ import (
 	"log"
 	"math/big"
 	"os"
-	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -62,8 +61,6 @@ func init() {
 func main() {
 	sponsorSetUpPolicyRules()
 	cexDoGaslessWithdrawl()
-	// wait for nonce to get updated
-	time.Sleep(8 * time.Second)
 	cexDoPrivatePolicyGaslessWithdrawl()
 }
 

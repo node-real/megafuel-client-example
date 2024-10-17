@@ -7,13 +7,13 @@ import (
 	"log"
 	"math/big"
 	"os"
-	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/gofrs/uuid"
 	"github.com/joho/godotenv"
 	"github.com/node-real/megafuel-go-sdk/pkg/paymasterclient"
@@ -69,8 +69,6 @@ func createERC20TransferData(to common.Address, amount *big.Int) ([]byte, error)
 
 func main() {
 	walletUserDoGaslessTx()
-	// wait for nonce to get updated
-	time.Sleep(8 * time.Second)
 	walletUserDoPrivatePolicyGaslessTx()
 }
 
@@ -107,8 +105,8 @@ func walletUserDoGaslessTx() {
 		log.Fatalf("Failed to create ERC20 transfer data: %v", err)
 	}
 
-	// Get the latest nonce for the from address
-	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	blockNumber := rpc.PendingBlockNumber
+	nonce, err := paymasterClient.GetTransactionCount(context.Background(), fromAddress, rpc.BlockNumberOrHash{BlockNumber: &blockNumber})
 	if err != nil {
 		log.Fatalf("Failed to get nonce: %v", err)
 	}
@@ -200,7 +198,8 @@ func walletUserDoPrivatePolicyGaslessTx() {
 	}
 
 	// Get the latest nonce for the from address
-	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	blockNumber := rpc.PendingBlockNumber
+	nonce, err := privatePaymasterClient.GetTransactionCount(context.Background(), fromAddress, rpc.BlockNumberOrHash{BlockNumber: &blockNumber})
 	if err != nil {
 		log.Fatalf("Failed to get nonce: %v", err)
 	}
