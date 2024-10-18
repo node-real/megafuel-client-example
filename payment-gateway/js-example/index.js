@@ -57,10 +57,7 @@ async function userDoGaslessPayment() {
 }
 
 async function paymentGatewaySetUpPolicyRules() {
-  const paymasterClient = new PaymasterClient(process.env.PAYMASTER_URL)
-  const network = await paymasterClient.getNetwork();
-  const client = new SponsorClient(process.env.SPONSOR_URL, null,
-      { staticNetwork: ethers.Network.from(network.chainId) });
+  const client = new SponsorClient(process.env.SPONSOR_URL);
 
   try {
     // sponsor the tx that interact with the stable coin ERC20 contract

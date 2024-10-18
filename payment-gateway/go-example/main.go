@@ -12,7 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/gofrs/uuid"
 	"github.com/joho/godotenv"
@@ -22,7 +21,6 @@ import (
 
 var (
 	PaymasterURL string
-	ChainURL     string
 	SponsorURL   string
 
 	PolicyUUID uuid.UUID
@@ -40,7 +38,6 @@ func init() {
 	}
 
 	PaymasterURL = os.Getenv("PAYMASTER_URL")
-	ChainURL = os.Getenv("CHAIN_URL")
 	SponsorURL = os.Getenv("SPONSOR_URL")
 
 	PolicyUUID, err = uuid.FromString(os.Getenv("POLICY_UUID"))
@@ -122,12 +119,6 @@ func paymentGatewaySetUpPolicyRules(receiver common.Address) {
 }
 
 func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
-	// Connect to an Ethereum node (for transaction assembly)
-	client, err := ethclient.Dial(ChainURL)
-	if err != nil {
-		log.Fatalf("Failed to connect to the Ethereum network: %v", err)
-	}
-
 	paymasterClient, err := paymasterclient.New(context.Background(), PaymasterURL)
 	if err != nil {
 		log.Fatalf("Failed to create PaymasterClient: %v", err)
@@ -163,7 +154,7 @@ func userDoGaslessPayment(receiver common.Address, amount *big.Int) {
 	tx := types.NewTransaction(nonce, TokenContractAddress, big.NewInt(0), 300000, gasPrice, data)
 
 	// Get the chain ID
-	chainID, err := client.ChainID(context.Background())
+	chainID, err := paymasterClient.ChainID(context.Background())
 	if err != nil {
 		log.Fatalf("Failed to get chain ID: %v", err)
 	}

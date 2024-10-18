@@ -3,11 +3,10 @@ import {ethers} from 'ethers'
 import {PaymasterClient, SponsorClient, WhitelistType} from 'megafuel-js-sdk'
 
 async function cexDoGaslessTransferTx() {
-  const chainID = process.env.CHAIN_ID
   const policyUUID = process.env.POLICY_UUID
   const sponsorUrl = process.env.SPONSOR_URL
   // Provider for sending the transaction (e.g., could be a different network or provider)
-  const paymasterClient = PaymasterClient.newPrivatePaymaster(sponsorUrl, policyUUID,  ethers.Network.from(Number(chainID)), {staticNetwork: ethers.Network.from(Number(chainID))})
+  const paymasterClient = PaymasterClient.newPrivatePaymaster(sponsorUrl, policyUUID)
   const network = await paymasterClient.getNetwork()
 
   const wallet = new ethers.Wallet(process.env.DEPOSIT_WALLET_PRIVATE_KEY)
@@ -55,12 +54,7 @@ async function cexDoGaslessTransferTx() {
 }
 
 async function sponsorSetUpPolicyRules() {
-  const paymasterClient = new PaymasterClient(process.env.PAYMASTER_URL)
-  const network = await paymasterClient.getNetwork()
-  const client = new SponsorClient(process.env.SPONSOR_URL, null,
-    {staticNetwork: ethers.Network.from(network.chainId)})
-
-  const wallet = new ethers.Wallet(process.env.DEPOSIT_WALLET_PRIVATE_KEY)
+  const client = new SponsorClient(process.env.SPONSOR_URL)
   // sponsor the tx that interact with the stable coin ERC20 contract
   try {
     // You can empty the policy rules before re-try.
