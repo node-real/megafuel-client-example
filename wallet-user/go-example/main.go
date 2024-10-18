@@ -12,7 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/joho/godotenv"
 	"github.com/node-real/megafuel-go-sdk/pkg/paymasterclient"
@@ -20,7 +19,6 @@ import (
 
 var (
 	PaymasterURL string
-	ChainURL     string
 
 	TokenContractAddress common.Address
 	RecipientAddress     common.Address
@@ -29,17 +27,11 @@ var (
 
 func init() {
 	err := godotenv.Load(".env")
-
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
 
 	PaymasterURL = os.Getenv("PAYMASTER_URL")
-	ChainURL = os.Getenv("CHAIN_URL")
-	if err != nil {
-		log.Fatalf("Error parsing PRIVATE_POLICY_UUID")
-	}
-
 	TokenContractAddress = common.HexToAddress(os.Getenv("TOKEN_CONTRACT_ADDRESS"))
 	RecipientAddress = common.HexToAddress(os.Getenv("RECIPIENT_ADDRESS"))
 	PrivateKey = os.Getenv("YOUR_PRIVATE_KEY")
@@ -64,11 +56,6 @@ func main() {
 }
 
 func walletUserDoGaslessTx() {
-	// Connect to an Ethereum node (for transaction assembly)
-	client, err := ethclient.Dial(ChainURL)
-	if err != nil {
-		log.Fatalf("Failed to connect to the Ethereum network: %v", err)
-	}
 	// Create a PaymasterClient (for transaction sending)
 	paymasterClient, err := paymasterclient.New(context.Background(), PaymasterURL)
 	if err != nil {
@@ -107,7 +94,7 @@ func walletUserDoGaslessTx() {
 	tx := types.NewTransaction(nonce, TokenContractAddress, big.NewInt(0), 300000, gasPrice, data)
 
 	// Get the chain ID
-	chainID, err := client.ChainID(context.Background())
+	chainID, err := paymasterClient.ChainID(context.Background())
 	if err != nil {
 		log.Fatalf("Failed to get chain ID: %v", err)
 	}
