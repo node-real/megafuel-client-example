@@ -16,8 +16,6 @@ from the official faucet)
    Open `.env` and replace the following placeholders:
 
     - 'PAYMASTER_URL' with the Paymaster URL.
-    - 'SPONSOR_URL' to the API key created by the sponsor in the Nodereal dashboard. create one
-      from [here](https://docs.nodereal.io/docs/megafuel-sponsor-guidelines) if you don't have it.
     - 'TOKEN_CONTRACT_ADDRESS' with the address of the ERC20 token you want to send.
     - 'RECIPIENT_ADDRESS' with the BSC address you want to send tokens to.
     - 'YOUR_PRIVATE_KEY' with your BSC private key (Please ensure that the unlocked account is allowed to send gasless
